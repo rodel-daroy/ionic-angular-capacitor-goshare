@@ -1,0 +1,314 @@
+@import '~saturn-datepicker/bundle.css';
+
+.app-w-100 {
+  width: 100% !important;
+}
+
+.app-w-90 {
+  width: 90% !important;
+}
+
+.app-w-50 {
+  width: 50% !important;
+}
+
+.app-w-45 {
+  width: 45% !important;
+}
+
+.app-w48 {
+  width: 48px !important;
+}
+
+
+.app-h-100 {
+  height: 100% !important;
+}
+
+.app-h-100-scroll {
+  height: 100% !important;
+  overflow-y: auto;
+}
+
+.app-h-50 {
+  height: 50% !important;
+}
+
+.app-h36 {
+  height: 36px !important;
+}
+
+
+.app-mt-35 {
+  margin-top: 35px !important;
+}
+
+.app-mv-20 {
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.app-mh-20 {
+  margin-left: 20px !important;
+  margin-right: 20px !important;
+}
+
+.app-mt-20 {
+  margin-top: 20px !important;
+}
+
+.app-mb-20 {
+  margin-bottom: 20px !important;
+}
+
+.app-m-16 {
+  margin: 16px !important;
+}
+
+.app-mt-16 {
+  margin-top: 16px !important;
+}
+
+.app-mb-16 {
+  margin-bottom: 16px !important;
+}
+
+.app-ml-16 {
+  margin-left: 16px !important;
+}
+
+.app-m-8 {
+  margin: 8px !important;
+}
+
+.app-mv-8 {
+  margin-top: 8px !important;
+  margin-bottom: 8px !important;
+}
+
+.app-mh-8 {
+  margin-left: 8px !important;
+  margin-right: 8px !important;
+}
+
+.app-mt-8 {
+  margin-top: 8px !important;
+}
+
+.app-mr-8 {
+  margin-right: 8px !important;
+}
+
+.app-mb-8 {
+  margin-bottom: 8px !important;
+}
+
+.app-ml-8 {
+  margin-left: 8px !important;
+}
+
+.app-mv-4 {
+  margin-top: 4px !important;
+  margin-bottom: 4px !important;
+}
+
+.app-mh-4 {
+  margin-left: 4px !important;
+  margin-right: 4px !important;
+}
+
+.app-mt-4 {
+  margin-top: 4px !important;
+}
+
+.app-mr-4 {
+  margin-right: 4px !important;
+}
+
+.app-ml-4 {
+  margin-left: 4px !important;
+}
+
+.app-mb-4 {
+  margin-bottom: 4px !important;
+}
+
+.app-mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.app-no-margin {
+  margin: 0 !important;
+}
+
+
+.app-pt-20 {
+  padding-top: 20px !important;
+}
+
+.app-ph-16 {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.app-p-8 {
+  padding: 8px !important;
+}
+
+.app-pv-8 {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.app-ph-8 {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.app-pt-8 {
+  padding-top: 8px !important;
+}
+
+.app-pl-8 {
+  padding-left: 8px !important;
+}
+
+.app-p-4 {
+  padding: 4px !important;
+}
+
+.app-pv-4 {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+.app-pl-4 {
+  padding-left: 4px !important;
+}
+
+.app-ion-item-no-padding {
+  --padding-start: 0px !important;
+  --inner-padding-end: 0px !important;
+}
+
+
+.app-font-32 {
+  font-size: 32px !important;
+}
+
+.app-font-24 {
+  font-size: 24px !important;
+}
+
+.app-font-20 {
+  font-size: 20px !important;
+}
+
+.app-font-16 {
+  font-size: 16px !important;
+}
+
+.app-font-14 {
+  font-size: 14px !important;
+}
+
+.app-font-12 {
+  font-size: 12px !important;
+}
+
+.app-font-10 {
+  font-size: 10px !important;
+}
+
+.app-font-bold {
+  font-weight: bold !important;
+}
+
+
+.app-flex-column {
+  flex-direction: column !important;
+}
+
+.app-flex-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.app-justify-end {
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+
+.app-d-block {
+  display: block !important;
+}
+
+.app-d-inline-block {
+  display: inline-block !important;
+}
+
+.app-overflow-hidden {
+  overflow: hidden !important;
+}
+
+
+.app-custom-scrollbar::-webkit-scrollbar {
+  height: 8px !important;
+  display: block !important;
+}
+
+.app-custom-scrollbar::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 3px rgba(99, 99, 99, 0.3);
+  -webkit-box-shadow: inset 0 0 3px rgba(99, 99, 99, 0.3);
+  border-radius: 4px;
+  background-color: #f7f5f5;
+}
+
+.app-custom-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 0 3px var(--ion-color-primary);
+  box-shadow: inset 0 0 3px var(--ion-color-primary);
+  background-color: #d4d4d4;
+}
+
+ion-app.gmaps_cdv .nav-decor {
+  display: none !important;
+}
+
+.mat-spacer {
+  flex: 1 1 auto;
+}
+
+.mat-expansion-panel-body {
+  padding: 0 16px 16px !important;
+}
+
+.mat-form-field .mat-form-field-wrapper {
+  width: 100%;
+  padding-bottom: 16px;
+}
+
+.price-model-popover {
+  --width: calc(100vw - 64px);
+
+  .popover-content {
+    max-width: 536px;
+    left: unset !important;
+    transform: translateX(-51%);
+  }
+}
+
+.introjs-helperLayer {
+  z-index: 1;
+  background-color: rgba(253, 255, 108, 0.11);
+  -webkit-box-shadow: 5px 5px 15px 5px #3e77ad, -9px 5px 15px 5px #f2a739, -7px -5px 15px 5px #3eadab, 12px -5px 15px 5px #80C7FF, 12px 10px 15px 7px #E488FF, -10px 10px 15px 7px #df364b, -10px -7px 27px 1px #8E5CFF, 0px 0px 4px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 5px 5px 15px 5px #3e77ad, -9px 5px 15px 5px #f2a739, -7px -5px 15px 5px #3eadab, 12px -5px 15px 5px #80C7FF, 12px 10px 15px 7px #E488FF, -10px 10px 15px 7px #df364b, -10px -7px 27px 1px #8E5CFF, 0px 0px 4px 1px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
+.app-map-box {
+  width: 100% !important;
+  height: 200px !important;
+}

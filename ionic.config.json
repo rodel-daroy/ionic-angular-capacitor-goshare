@@ -1,0 +1,7 @@
+{
+  "name": "GoShare360",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

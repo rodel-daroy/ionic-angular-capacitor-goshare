@@ -1,0 +1,117 @@
+.mat-accordion .mat-expansion-panel-header {
+  padding: 0 0 0 8px;
+}
+
+.mat-accordion .mat-expansion-panel-header-title,
+.mat-accordion .mat-expansion-panel-header-description {
+  flex-basis: 0;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.curd-details-container {
+
+  .gallery-slides {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: auto;
+
+    ion-slide {
+      img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+    }
+  }
+
+  .horizontal-gallery {
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: block;
+
+    ion-card {
+      width: 40px;
+      height: 40px;
+      margin-left: 0;
+      display: inline-block;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .host-info {
+    ion-avatar {
+      width: 40px;
+      height: 40px;
+      margin-right: 16px;
+    }
+  }
+
+  .title-description {
+    .description {
+      font-size: 16px;
+    }
+  }
+
+  .crud-detail-map-container {
+
+    mat-list-item {
+      height: 60px;
+    }
+
+    ::ng-deep .mat-list-item-content {
+      padding: 0;
+
+      mat-label {
+        font-size: 14px;
+      }
+    }
+  }
+
+  h6 {
+    border: 1px solid rgb(184, 184, 184);
+    border-radius: 8px;
+    margin: 4px 0 20px 0;
+    padding: 8px;
+  }
+
+  .pricing-area {
+
+    ion-card {
+      background-color: rgb(87, 87, 87);
+      padding: 16px 16px 0 16px;
+      color: white;
+      overflow: visible;
+      position: relative;
+    }
+
+    input {
+      margin-left: 8px;
+      font-size: 1.3rem !important;
+    }
+
+    mat-hint {
+      color: white;
+    }
+
+    .price-card {
+      padding-top: 20px;
+      padding-left: 20px;
+      color: #FFFFFF;
+      display: block;
+      position: relative;
+    }
+
+  }
+}

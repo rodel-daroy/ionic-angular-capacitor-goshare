@@ -1,0 +1,367 @@
+<ion-header>
+  <ion-toolbar mode="md" color="dark">
+    <ion-buttons slot="start">
+      <ion-button (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <ion-button class="app-w48 ion-hide-sm-down"></ion-button>
+    </ion-buttons>
+
+    <ion-title class="ion-text-center ion-hide-sm-down">
+      {{crudDetail?.title}} by: {{crudDetail.user?.username}}</ion-title>
+    <ion-title class="ion-no-padding ion-hide-sm-up">
+      <ng-marquee>
+        <ion-label>{{crudDetail?.title}} by: {{crudDetail.user?.username}}</ion-label>
+      </ng-marquee>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="favourite()">
+        <ion-icon slot="icon-only" name="heart"></ion-icon>
+      </ion-button>
+      <ion-button (click)="share()">
+        <ion-icon slot="icon-only" name="share-social"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-no-padding">
+  <ion-button color="primary" expand="full" class="ion-margin-horizontal" (click)="ViewFullScreen()"
+              *ngIf="desktopPlatform">
+    Full Screen
+  </ion-button>
+  <ion-row class="gallery-slides">
+    <ion-slides class="app-w-100 app-h-100" #gallerySlides>
+      <ion-slide *ngFor="let image of gallery()">
+        <img [src]="image" alt=""/>
+      </ion-slide>
+    </ion-slides>
+  </ion-row>
+  <ion-grid class="ion-padding curd-details-container">
+
+    <ion-row class="horizontal-gallery">
+      <ion-card class="mat-elevation-z4" *ngFor="let image of gallery()" (click)="viewImage(image)">
+        <img [src]="image" alt=""/>
+      </ion-card>
+    </ion-row>
+
+    <div matLine>
+      <ion-row class="title-description">
+        <h1>{{crudDetail?.title}}</h1>
+        <ion-label class="app-w-100 ion-text-wrap description">{{crudDetail?.description}}</ion-label>
+        <ion-label class="app-w-100 ion-text-wrap description">{{crudDetail?.detailed_description}}</ion-label>
+      </ion-row>
+    </div>
+
+    <ion-row class="ion-margin-top crud-detail-map-container">
+      <app-google-map class="mat-elevation-z4 app-map-box" #crudDetailMap [mapOptions]="mapOptions"></app-google-map>
+
+      <h5>ADDRESS / LOCATION</h5>
+      <mat-list class="app-w-100">
+        <mat-list-item *ngFor="let list of crudDetail.address">
+          <button mat-icon-button color="dark" (click)="pinTo(list)">
+            <mat-icon>my_location</mat-icon>
+          </button>
+          <mat-label matLine class="app-font-weight-bold">{{list.title}}</mat-label>
+          <mat-label matLine>{{list.formatted_address}}</mat-label>
+        </mat-list-item>
+      </mat-list>
+    </ion-row>
+
+    <ion-row class="available-dates" *ngIf="crudDetail.date_range && crudDetail.date_range.length > 0">
+      <h5>Available Dates</h5>
+      <ion-card class="app-w-100 ion-no-margin ion-margin-bottom">
+        <ion-slides class="app-w-100">
+          <ion-slide class="app-w-100" *ngFor="let list of crudDetail.date_range">
+            <ion-row class="app-w-100">
+              <sat-calendar class="app-w-50" [rangeMode]="true"
+                            [startAt]="displayFormatDate(list.start)"
+                            [beginDate]="displayFormatDate(list.start)"
+                            [endDate]="displayFormatDate(list.end)">
+              </sat-calendar>
+              <sat-calendar class="app-w-50" [rangeMode]="true"
+                            [startAt]="getNextMonth(list.start)"
+                            [beginDate]="displayFormatDate(list.start)"
+                            [endDate]="displayFormatDate(list.end)">
+              </sat-calendar>
+            </ion-row>
+          </ion-slide>
+        </ion-slides>
+      </ion-card>
+
+      <ion-label class="ion-margin-bottom" *ngIf="crudDetail?.availability_description">
+        {{crudDetail?.availability_description}}</ion-label>
+
+      <ion-grid class="ion-no-margin ion-no-padding">
+        <form [formGroup]="thingForm"
+              *ngIf="crudDetail.categories[0] && (crudDetail.categories[0].name === 'Things' || crudDetail.categories[0].name === 'Stuff')">
+          <ion-row class="ion-justify-content-between">
+            <mat-form-field appearance="outline" class="app-w-45">
+              <mat-label>Pick up</mat-label>
+              <input matInput placeholder="Jun 1" formControlName="thingPickUpDisplay">
+              <input matInput hidden placeholder="Jun 1" formControlName="thingPickUp"
+                     [satDatepicker]="thingPickUpPicker" (dateChange)="thingPickUpChange($event)">
+              <sat-datepicker #thingPickUpPicker></sat-datepicker>
+              <sat-datepicker-toggle matSuffix [for]="thingPickUpPicker"></sat-datepicker-toggle>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="app-w-45">
+              <mat-label>Drop off</mat-label>
+              <input matInput placeholder="Jun 5" formControlName="thingDropOffDisplay">
+              <input matInput hidden placeholder="Jun 5" formControlName="thingDropOff"
+                     [satDatepicker]="thingDropOffPicker" (dateChange)="thingDropOffChange($event)">
+              <sat-datepicker #thingDropOffPicker></sat-datepicker>
+              <sat-datepicker-toggle matSuffix [for]="thingDropOffPicker"></sat-datepicker-toggle>
+            </mat-form-field>
+          </ion-row>
+        </form>
+
+        <form [formGroup]="serviceForm"
+              *ngIf="crudDetail.categories[0] && (crudDetail.categories[0].name === 'Services' || crudDetail.categories[0].name === 'Care Share' || crudDetail.categories[0].name === 'Food' || crudDetail.categories[0].name === 'Sports')">
+          <mat-form-field appearance="outline" class="app-w-100">
+            <mat-label>Service Date</mat-label>
+            <input matInput placeholder="Jun 1" formControlName="serviceDateDisplay">
+            <input matInput hidden placeholder="Jun 1" formControlName="serviceDate"
+                   [satDatepicker]="serviceDatePicker" (dateChange)="serviceDateChange($event)">
+            <sat-datepicker #serviceDatePicker></sat-datepicker>
+            <sat-datepicker-toggle matPrefix [for]="serviceDatePicker"></sat-datepicker-toggle>
+          </mat-form-field>
+        </form>
+      </ion-grid>
+    </ion-row>
+
+
+    <ion-row class="ion-margin-vertical pricing-area">
+      <ion-card class="app-w-100 ion-no-margin">
+        <h5>PRICING</h5>
+        <ion-label *ngIf="crudDetail.price?.price_criteria === 'FREE'">FREE</ion-label>
+        <div *ngIf="crudDetail.price?.price_model === 'Hourly'">
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100">
+            <mat-label>{{crudDetail.price?.price_model}}</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayPrice('Hourly')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayComments('Hourly')}}</mat-hint>
+          </mat-form-field>
+
+          <div class="price-card" *ngIf="false">
+            <mat-label>${{displayPrice('Hourly')}}</mat-label>
+            <span> /hour</span><br>
+            <span class="app-font-10">{{displayComments('Hourly')}}</span>
+          </div>
+        </div>
+        <div *ngIf="crudDetail.price?.price_model === 'Half Day'">
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100">
+            <mat-label>{{crudDetail.price?.price_model}}</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayPrice('Half Day')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayComments('Half Day')}}</mat-hint>
+          </mat-form-field>
+        </div>
+        <div *ngIf="crudDetail.price?.price_model === 'Full Day'">
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100">
+            <mat-label>{{crudDetail.price?.price_model}}</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayPrice('Full Day')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayComments('Full Day')}}</mat-hint>
+          </mat-form-field>
+        </div>
+        <div *ngIf="crudDetail.price?.price_model === 'Guest'">
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100"
+                          *ngIf="crudDetail.price.price_detail?.adultPrice">
+            <mat-label>Adult</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayGuestPrice('adult')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayGuestComments('adult')}}</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100"
+                          *ngIf="crudDetail.price.price_detail?.childPrice">
+            <mat-label>Adult</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayGuestPrice('child')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayGuestComments('child')}}</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100"
+                          *ngIf="crudDetail.price.price_detail?.infantPrice">
+            <mat-label>Adult</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayGuestPrice('infant')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayGuestComments('infant')}}</mat-hint>
+          </mat-form-field>
+
+          <div class="price-card" *ngIf="false">
+            <ng-container *ngFor="let item of displayGuestPrices()">
+              <mat-label>${{item.price}}</mat-label>
+              <span> /{{item.unit}}</span><br>
+            </ng-container>
+          </div>
+        </div>
+        <div *ngIf="crudDetail.price?.price_model === 'Service'">
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100">
+            <mat-label>{{crudDetail.price?.price_model}}</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayPrice('Service')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayComments('Service')}}</mat-hint>
+          </mat-form-field>
+        </div>
+        <div *ngIf="crudDetail.price?.price_model === 'Price Range'">
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100">
+            <mat-label>{{crudDetail.price?.price_model}}</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayPrice('Price Range')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayComments('Price Range')}}</mat-hint>
+          </mat-form-field>
+        </div>
+        <div *ngIf="crudDetail.price?.price_model === 'Weekly, Weekend, Nightly'">
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100"
+                          *ngIf="crudDetail.price.price_detail?.weeklyPrice">
+            <mat-label>Weekly</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayWeeklyPrice('weekly')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayWeeklyComments('weekly')}}</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100"
+                          *ngIf="crudDetail.price.price_detail?.weekendPrice">
+            <mat-label>Weekend</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayWeeklyPrice('weekend')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayWeeklyComments('weekend')}}</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" floatLabel="always" class="app-w-100"
+                          *ngIf="crudDetail.price.price_detail?.nightlyPrice">
+            <mat-label>Nightly</mat-label>
+            <input matInput placeholder="50.00" [ngModel]="displayWeeklyPrice('nightly')">
+            <mat-icon matPrefix>monetization_on</mat-icon>
+            <mat-hint>{{displayWeeklyComments('nightly')}}</mat-hint>
+          </mat-form-field>
+
+          <div class="price-card" *ngIf="false">
+            <ng-container *ngFor="let item of displayWeeklyPrices()">
+              <mat-label>${{item.price}}</mat-label>
+              <span> /{{item.unit}}</span><br>
+            </ng-container>
+          </div>
+        </div>
+      </ion-card>
+    </ion-row>
+
+    <ion-row class="ion-margin-vertical" *ngIf="crudDetail.suggest_category && cacheService.user?.role === 'admin'">
+      <ion-label>Suggest Catefory: {{crudDetail.suggest_category}}</ion-label>
+    </ion-row>
+
+    <ion-list lines="none" *ngIf="crudDetail.uid === cacheService.user.uid">
+      <ion-item>
+        <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+        <ion-label>This is your listing</ion-label>
+      </ion-item>
+      <ion-row>
+        <ion-col size-sm="6" size="6" class="ion-text-center">
+          <ion-button expand="full" (click)="share()">Share</ion-button>
+        </ion-col>
+        <ion-col size-sm="6" size="6" class="ion-text-center">
+          <ion-button expand="full" (click)="edit()">Edit</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+
+    <ion-list lines="none" *ngIf="cacheService.user.uid !== crudDetail.uid && !connected">
+      <ion-item class="item-avatar">
+        <ion-avatar slot="start" (click)="openPublicProfile()">
+          <img [src]="crudDetail.user.avatar ? crudDetail.user.avatar : variableService.noAvatar" [alt]="''"/>
+        </ion-avatar>
+        <ion-label>Connect with {{crudDetail.user?.username}}</ion-label>
+        <ion-icon slot="end" name="person-add-outline"></ion-icon>
+      </ion-item>
+      <ion-button expand="block" (click)="connect()">Connect</ion-button>
+    </ion-list>
+
+    <ion-list lines="none" *ngIf="cacheService.user.uid !== crudDetail.uid && connected">
+      <ion-item *ngIf="!bookAvailability">
+        <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
+        <ion-label>Your connection is {{bookInfo?.state}}</ion-label>
+      </ion-item>
+      <ion-button expand="block" (click)="viewConnect()">View Connection</ion-button>
+      <ion-item *ngIf="bookAvailability">
+        <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
+        <ion-label>
+          Let {{crudDetail.user.username}} know you’re also interested in their {{crudDetail.title}}
+        </ion-label>
+      </ion-item>
+      <ion-button expand="block" (click)="connect()">Add to connection</ion-button>
+    </ion-list>
+
+    <ion-list lines="none"
+              *ngIf="cacheService.user.uid !== crudDetail.uid && !bookAvailability && bookInfo?.state === 'approved'">
+      <ion-item>
+        <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+        <ion-label>This user accepted your connection request.</ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="crudDetail.host_contact_settings?.phoneNumber">
+        <ion-icon slot="start" name="call-outline"></ion-icon>
+        <ion-label>{{crudDetail.host_contact_settings.phoneNumber}}</ion-label>
+        <ion-button slot="end" (click)="call()">CALL NOW</ion-button>
+      </ion-item>
+
+      <ion-item *ngIf="crudDetail.host_contact_settings?.email">
+        <ion-icon slot="start" name="mail-outline"></ion-icon>
+        <ion-label>{{crudDetail.host_contact_settings.email}}</ion-label>
+        <ion-button slot="end" (click)="email()">EMAIL</ion-button>
+      </ion-item>
+
+      <ion-item *ngIf="crudDetail.host_contact_settings?.chatState">
+        <ion-icon slot="start" name="chatbubbles-outline"></ion-icon>
+        <ion-label>Chat</ion-label>
+
+        <ion-button slot="end" (click)="chat()">CHAT</ion-button>
+      </ion-item>
+    </ion-list>
+
+    <!-- ADMIN ONLY Approve Deny -->
+    <ion-list lines="none" *ngIf="cacheService.user?.role === 'admin'">
+      <ion-item *ngIf="!crudDetail.live">
+        <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+        <ion-label>This item is Pending</ion-label>
+      </ion-item>
+      <ion-item *ngIf="crudDetail.live">
+        <ion-icon slot="start" color="success" name="checkmark-done-outline"></ion-icon>
+        <ion-label>This listing has been approved</ion-label>
+      </ion-item>
+      <ion-row *ngIf="!crudDetail.live">
+        <ion-col size-sm="6" size="6" class="ion-text-center">
+          <ion-button expand="full" (click)="approve()">Approve</ion-button>
+        </ion-col>
+        <ion-col size-sm="6" size="6" class="ion-text-center">
+          <ion-button expand="full" (click)="deny()">Deny</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="crudDetail.live === 'approve'">
+        <ion-col size-sm="6" size="6" class="ion-text-center">
+          <ion-button expand="full" (click)="deny()">Deny</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+
+    <ion-list lines="none">
+      <ion-item>
+        <ion-icon slot="start"></ion-icon>
+        <ion-label>Flag | Block | Report - This User</ion-label>
+      </ion-item>
+      <ion-row>
+        <ion-col size-xs="4" size-sm="4" size="12" class="ion-text-center">
+          <ion-button expand="full" (click)="flag()">Flag this</ion-button>
+        </ion-col>
+        <ion-col size-xs="4" size-sm="4" size="12" class="ion-text-center">
+          <ion-button expand="full" (click)="block()">Block User</ion-button>
+        </ion-col>
+        <ion-col size-xs="4" size-sm="4" size="12" class="ion-text-center">
+          <ion-button expand="full" color="danger" (click)="report()">Block &amp; Report</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+
+  </ion-grid>
+</ion-content>

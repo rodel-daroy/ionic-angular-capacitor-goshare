@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">{{type}} Options</ion-title>
+    <ion-buttons slot="end" class="app-w48"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="none">
+    <ion-list-header>Size Options</ion-list-header>
+    <ion-item>
+      <mat-slide-toggle [checked]="sizeOption.small" (change)="changeSizeOptions($event, 'small')">
+        Small
+      </mat-slide-toggle>
+    </ion-item>
+    <ion-item>
+      <mat-slide-toggle [checked]="sizeOption.medium" (change)="changeSizeOptions($event, 'medium')">
+        Medium
+      </mat-slide-toggle>
+    </ion-item>
+    <ion-item>
+      <mat-slide-toggle [checked]="sizeOption.large" (change)="changeSizeOptions($event, 'large')">
+        Large
+      </mat-slide-toggle>
+    </ion-item>
+    <ion-list-header>View Mode</ion-list-header>
+    <ion-item>
+      <mat-slide-toggle [checked]="viewMode === 'Vertical'" (change)="changeViewMode($event)">
+        {{viewMode}}
+      </mat-slide-toggle>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md">
+    <ion-buttons slot="end">
+      <ion-button size="small" color="primary" shape="block" fill="solid" (click)="apply()">Apply</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

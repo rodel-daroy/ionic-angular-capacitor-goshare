@@ -1,0 +1,113 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Verification</ion-title>
+    <ion-buttons slot="end" class="app-w48"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="mat-elevation-z2 verification-container">
+    <h2>Instructions</h2>
+    <h5 class="app-font-bold">1. Choose a document to verify from the dropdown below.</h5>
+    <mat-form-field appearance="fill">
+      <mat-label>Verification document</mat-label>
+      <mat-select (selectionChange)="selectType($event)">
+        <mat-option [value]="type" *ngFor="let type of verificationTypes">{{type}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <ion-row>
+      <ion-col size="6">
+        <mat-form-field appearance="fill">
+          <mat-label>First Name</mat-label>
+          <input matInput [(ngModel)]="firstName"/>
+        </mat-form-field>
+      </ion-col>
+      <ion-col size="6">
+        <mat-form-field appearance="fill">
+          <mat-label>Last Name</mat-label>
+          <input matInput [(ngModel)]="lastName"/>
+        </mat-form-field>
+      </ion-col>
+      <ion-col size="12">
+        <mat-form-field appearance="fill">
+          <mat-label>Phone Number</mat-label>
+          <input matInput [(ngModel)]="phoneNumber"/>
+        </mat-form-field>
+      </ion-col>
+      <ion-col size="12">
+        <mat-form-field appearance="fill">
+          <mat-label>Address</mat-label>
+          <input matInput [(ngModel)]="address"/>
+        </mat-form-field>
+      </ion-col>
+    </ion-row>
+
+    <h5 class="app-font-bold">2. Upload your documents &amp; perform a live capture.</h5>
+    <mat-grid-list cols="1" rowHeight="2:1" gutterSize="20px">
+      <mat-grid-tile id="frontImage" [ngStyle]="{'background-image': 'url(' + images.front + ')'}">
+        <ion-row class="mat-grid-tile-content" (click)="uploadImage('front')">
+          <h3 *ngIf="images.front === ''">Document Front</h3>
+        </ion-row>
+        <mat-grid-tile-footer class="ion-justify-content-between">
+          <ion-row>
+            <mat-checkbox class="app-mr-8" [ngModel]="valid.front"></mat-checkbox>
+            <mat-card-title-group>
+              {{images.front === '' ? 'Upload the front of your document' : 'Successfully Uploaded Document'}}
+            </mat-card-title-group>
+          </ion-row>
+          <ion-button color="light" (click)="removeImage('front')" *ngIf="images.front !== ''">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </mat-grid-tile-footer>
+      </mat-grid-tile>
+      <mat-grid-tile id="backImage" [ngStyle]="{'background-image': 'url(' + images.back + ')'}"
+                     *ngIf="documentType !== 'Passport'">
+        <ion-row class="mat-grid-tile-content" (click)="uploadImage('back')">
+          <h3 *ngIf="images.back === ''">Document Back</h3>
+        </ion-row>
+        <mat-grid-tile-footer class="ion-justify-content-between">
+          <ion-row>
+            <mat-checkbox class="app-mr-8" [ngModel]="valid.back"></mat-checkbox>
+            <mat-card-title-group>
+              {{images.back === '' ? 'Upload the Back of your document' : 'Successfully Uploaded Document'}}
+            </mat-card-title-group>
+          </ion-row>
+          <ion-button color="light" (click)="removeImage('back')" *ngIf="images.back !== ''">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </mat-grid-tile-footer>
+      </mat-grid-tile>
+      <mat-grid-tile id="liveCapture" [ngStyle]="{'background-image': 'url(' + images.live + ')'}">
+        <ion-row class="mat-grid-tile-content" (click)="uploadImage('live')">
+          <h3 *ngIf="images.live === ''">Live Capture</h3>
+        </ion-row>
+        <mat-grid-tile-footer class="ion-justify-content-between">
+          <ion-row>
+            <mat-checkbox class="app-mr-8" [ngModel]="valid.live"></mat-checkbox>
+            <mat-card-title-group>Tap "Live Capture" and follow instructions</mat-card-title-group>
+          </ion-row>
+          <ion-button color="light" (click)="removeImage('live')" *ngIf="images.live !== ''">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </mat-grid-tile-footer>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <webcam hidden (cameraSwitched)="cameraWasSwitched($event)" (initError)="handleInitError($event)"></webcam>
+    <input hidden type="file" id="verificationUpload" (change)="verificationUpload($event)">
+
+    <h5 class="app-mt-35 app-font-bold">3. Submit your verification</h5>
+    <p class="app-font-12">**SUBMIT button will activate after you upload all 3 documents.</p>
+    <mat-action-list>
+      <button mat-list-item [disabled]="!valid.live" (click)="submit()">Submit</button>
+    </mat-action-list>
+
+    <mat-divider class="app-mb-20"></mat-divider>
+
+    <mat-divider class="app-m-20"></mat-divider>
+
+  </ion-grid>
+</ion-content>

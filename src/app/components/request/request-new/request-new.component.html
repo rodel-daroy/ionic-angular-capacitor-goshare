@@ -1,0 +1,83 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Make Request</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-margin ion-padding">
+    <mat-form-field appearance="fill" floatLabel="always" class="app-w-100 ion-margin-bottom">
+      <mat-label>KEYWORD</mat-label>
+      <input matInput placeholder="Example: Bike" [(ngModel)]="keyword">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" floatLabel="always" class="app-w-100">
+      <mat-label>CITY</mat-label>
+      <input matInput placeholder="Example: Salt Lake City" (input)="cityChange($event)" [disabled]="allCities">
+    </mat-form-field>
+    <ion-row class="app-m-b-8" *ngIf="selectedCities.length > 0 && !allCities"
+             [ngStyle]="{'margin-top': (selectedCities.length > 0 && !allCities? '-8px': '0')}">
+      <ion-label class="app-p-4 city-label" *ngFor="let city of selectedCities; let i = index" (click)="removeCity(i)">
+        <ion-row class="ion-align-items-center">
+          {{city}}
+          <ion-icon name="close" class="app-ml-4 app-font-16"></ion-icon>
+        </ion-row>
+      </ion-label>
+    </ion-row>
+    <ion-row class="ion-margin-bottom ion-align-items-center" (click)="allCitiesChange()"
+             [ngStyle]="{'margin-top': (selectedCities.length > 0 && !allCities? '0': '-8px')}">
+      <input type="radio" [checked]="allCities">
+      <ion-label class="app-ml-8 app-font-16">All Cities</ion-label>
+    </ion-row>
+    <ion-list class="ion-no-padding mat-elevation-z4 location-list" *ngIf="googleAutocompleteItems.length > 0">
+      <ion-item tappable *ngFor="let prediction of googleAutocompleteItems"
+                (click)="selectSearchLocation(prediction)">
+        <ion-label class="app-ml-8">{{ prediction.description }}</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <mat-form-field appearance="fill" floatLabel="always" class="app-w-100 ion-margin-bottom">
+      <mat-label>COMMENTS</mat-label>
+      <input matInput placeholder="What are you looking for?" [(ngModel)]="comments">
+      <mat-hint>*Optional</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" floatLabel="always" class="app-w-100 ion-margin-bottom" (click)="uploadImage()">
+      <mat-label>IMAGE</mat-label>
+      <input matInput placeholder="UPLOAD">
+      <mat-hint>*Optional</mat-hint>
+    </mat-form-field>
+    <input hidden type="file" id="imageUpload" (change)="imageUpload($event)">
+
+    <ion-img class="mat-elevation-z1 image-upload" [src]="image" *ngIf="image !== ''"></ion-img>
+
+    <mat-form-field appearance="fill" class="app-w-100 ion-margin-bottom">
+      <mat-label>
+        <mat-icon>list</mat-icon>
+        <b>Category</b> <i></i>
+      </mat-label>
+      <mat-select required multiple (selectionChange)="categoriesSelectionChange($event)">
+        <mat-option *ngFor="let category of allCategories" [value]="category">{{category}}</mat-option>
+      </mat-select>
+      <mat-hint>*Optional</mat-hint>
+    </mat-form-field>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md">
+    <ion-buttons slot="end">
+      <ion-button size="small" color="primary" shape="block" fill="solid" (click)="submit()">Submit</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

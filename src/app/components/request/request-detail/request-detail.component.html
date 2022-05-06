@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Request Detail</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-padding">
+    <ion-img class="app-mb-16 mat-elevation-z1 request-image" [src]="requestDetail?.image"
+             *ngIf="requestDetail?.image !== ''">
+    </ion-img>
+
+    <h3 class="app-no-margin app-mb-4">Category/'s:</h3>
+    <ion-row class="app-mb-16">
+      <ion-label class="app-mr-8" *ngFor="let category of requestDetail?.categories">{{category}}</ion-label>
+    </ion-row>
+
+    <h3 class="app-no-margin app-m-b-4">Keywords:</h3>
+    <ion-label class="app-mb-16">{{requestDetail?.keyword}}</ion-label>
+
+    <h3 class="app-no-margin app-mb-4">Comments:</h3>
+    <ion-label class="app-mb-16">{{requestDetail?.comments}}</ion-label>
+
+    <ion-card>
+      <ion-grid class="ion-no-padding">
+        <ion-item lines="none">Requested By:</ion-item>
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img [src]="requestDetail?.user.avatar ? requestDetail?.user.avatar : variableService.noAvatar" alt=""/>
+          </ion-avatar>
+          <ion-label>{{requestDetail?.user.username}}</ion-label>
+          <ion-icon slot="end" name="ellipsis-vertical" color="dark" (click)="openDrawer()"></ion-icon>
+        </ion-item>
+        <ion-item lines="none" *ngIf="!connectionState || connectionState === 'unConnected'">
+          <ion-button color="primary" fill="outline" (click)="connect()">Connect</ion-button>
+        </ion-item>
+        <ion-item *ngIf="connectionState === 'connected'">
+          <ion-button color="primary" fill="outline">Chat with {{requestDetail.user.username}}</ion-button>
+        </ion-item>
+      </ion-grid>
+    </ion-card>
+  </ion-grid>
+</ion-content>

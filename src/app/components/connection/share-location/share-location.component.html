@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">SHARE LOCATION</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="share-location-container">
+
+    <ion-row class="share-location-map">
+      <app-google-map class="mat-elevation-z2" #shareLocationMap [mapOptions]="mapOptions"></app-google-map>
+      <mat-hint class="app-mt-8 app-font-14">
+        Touch Map to choose location or Tap the "Use my location" button to add your location.
+      </mat-hint>
+    </ion-row>
+
+    <ion-row class="ion-margin-top">
+      <button mat-raised-button color="primary" (click)="useMyLocation()">Use my location</button>
+    </ion-row>
+
+    <ion-row class="my-location">
+      <ion-label class="ion-text-wrap">{{locationAddress}}</ion-label>
+      <button mat-icon-button matSuffix aria-label="Clear" (click)="locationAddress=''" *ngIf="locationAddress">
+        <mat-icon>close</mat-icon>
+      </button>
+    </ion-row>
+
+    <mat-form-field class="app-w-100">
+      <textarea matInput placeholder="Describe the details about this location" [(ngModel)]="locationDescription">
+      </textarea>
+      <button mat-icon-button matSuffix aria-label="Clear" (click)="locationDescription=''" *ngIf="locationDescription">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <ion-row class="share-location-icon">
+      <ion-card class="mat-elevation-z2">
+        <ion-img *ngIf="icon" [src]="icon"></ion-img>
+        <ion-img *ngIf="!icon" [src]="'/assets/crud/no-image.png'" (click)="uploadMapIcon()"></ion-img>
+        <input hidden type="file" id="shareLocationIcon" (change)="fileChangeEvent($event)">
+      </ion-card>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="end">
+      <button mat-raised-button (click)="shareLocation()">Share Location</button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

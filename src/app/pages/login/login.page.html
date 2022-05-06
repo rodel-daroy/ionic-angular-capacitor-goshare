@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar mode="md" color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button color="light" default-href="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">GS360 LOGIN</ion-title>
+    <ion-buttons slot="end" class="app-w48"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="grad-bg">
+
+  <div class="content">
+    <img class="welcome-logo" src="/assets/logo/original-white.svg" alt="GoShare360 Logo"/>
+    <hr size="2" noshade style="margin: 20px 0; opacity:.5;">
+    <header>MEMBER LOGIN</header>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <ion-item class="field">
+        <ion-input type="text" placeholder="Email" formControlName="email"></ion-input>
+      </ion-item>
+      <div class="field">
+        <input type="submit" value="LOGIN">
+      </div>
+    </form>
+  </div>
+
+</ion-content>

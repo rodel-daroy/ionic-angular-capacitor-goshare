@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">IMAGE PREVIEW</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-img class="app-w-100 app-h-100" [src]="imageSrc"></ion-img>
+</ion-content>

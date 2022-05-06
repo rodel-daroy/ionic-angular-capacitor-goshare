@@ -1,0 +1,137 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Incoming Shares</ion-title>
+    <ion-buttons slot="end" class="app-w48"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="app-h-100 ion-no-padding">
+    <ion-row class="app-h-100">
+      <ion-col size-md="6" size-sm="12" size="12" class="ion-padding"
+               [ngClass]="desktopPlatform ? 'app-h-100-scroll mat-elevation-z8' : ''">
+        <h2 *ngIf="pendingCruds.length > 0">Incoming</h2>
+        <mat-card class="crud-pending-card" *ngFor="let crud of pendingCruds">
+          <img mat-card-image class="mat-elevation-z2"
+               [src]="crud.main_background ? crud.main_background : variableService.emptyImage" alt="Crud Main Image"/>
+
+          <mat-card-content>
+            <p>{{crud?.title}}</p>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button mat-flat-button color="primary" (click)="approveCrud(crud)">APPROVE</button>
+            <button mat-flat-button color="danger" (click)="denyCrud(crud)">DENY</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <h2 *ngIf="flaggedCruds.length > 0">FLAGGED ITEMS</h2>
+        <mat-card class="crud-flag-card" *ngFor="let crud of flaggedCruds">
+          <ion-grid class="ion-no-padding">
+            <ion-row>
+              <ion-col size-sm="12" size-md="5" size="12" (click)="crudDetail(crud)">
+                <img [src]="crud.main_background ? crud.main_background : variableService.emptyImage" alt=""/>
+              </ion-col>
+              <ion-col size-sm="12" sizeSm="7" size="12" class="ion-padding-top ion-padding-start">
+                <p class="app-w-90">{{crud?.title}}</p>
+
+                <ion-list class="flag-list">
+                  <ng-container *ngFor="let flag of crud.flagList">
+                    <p class="app-w-90" *ngIf="flag.flagUser">Flagged By: {{flag.flagUser.username}}</p>
+                    <p class="app-w-90 underline" *ngIf="flag.flagUser">Reason: {{flag.reason}}</p>
+
+                    <p class="app-w-90" *ngIf="flag.reportUser">Reported By: {{flag.reportUser.username}}</p>
+                    <p class="app-w-90 underline" *ngIf="flag.reportUser">Reason: {{flag.reason}}</p>
+                  </ng-container>
+                </ion-list>
+
+                <ion-row>
+                  <ion-button (click)="blockCrud(crud)">BLOCK POST</ion-button>
+                  <ion-button (click)="keepCrud(crud)">KEEP</ion-button>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </mat-card>
+
+        <h2 class="app-mt-16" *ngIf="flaggedRequests.length > 0">Flagged Request Items</h2>
+        <mat-card class="request-flag-card" *ngFor="let request of flaggedRequests">
+          <ion-grid class="ion-no-padding">
+            <ion-row>
+              <ion-col size-sm="12" size-md="5" size="12" (click)="requestDetail(request)">
+                <img [src]="request.image !== ''? request.image : variableService.emptyImage" alt=""/>
+              </ion-col>
+              <ion-col size-sm="12" sizeSm="7" size="12" class="ion-padding-top ion-padding-start">
+                <p class="app-w-90">{{request.keyword}}</p>
+
+                <ion-list class="flag-list">
+                  <ng-container *ngFor="let flag of request.flagList">
+                    <p class="app-w-90" *ngIf="flag.reportUser">Reported By: {{flag.reportUser.username}}</p>
+                    <p class="app-w-90 underline" *ngIf="flag.reportUser">Reason: {{flag.reason}}</p>
+
+                    <p class="app-w-90" *ngIf="flag.blockUser">Blocked By: {{flag.blockUser.username}}</p>
+                    <p class="app-w-90 underline" *ngIf="flag.blockUser">Reason: {{flag.reason}}</p>
+                  </ng-container>
+                </ion-list>
+
+                <ion-row>
+                  <ion-button (click)="blockRequest(request)">BLOCK POST</ion-button>
+                  <ion-button (click)="keepRequest(request)">KEEP</ion-button>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </mat-card>
+      </ion-col>
+
+      <ion-col size-md="6" size-sm="12" size="12" class="ion-padding"
+               [ngClass]="desktopPlatform ? 'app-h-100-scroll mat-elevation-z8' : ''">
+        <ion-list>
+          <ion-list-header *ngIf="approvedCruds.length > 0">
+            <h2 class="app-no-margin">Approved List</h2>
+          </ion-list-header>
+          <ion-item *ngFor="let crud of approvedCruds">
+            <ion-label>{{crud.title}}</ion-label>
+            <ion-button color="danger" (click)="denyCrud(crud)">Deny</ion-button>
+          </ion-item>
+
+          <ion-list-header class="ion-margin-top" *ngIf="deniedCruds.length > 0">
+            <h2 class="app-no-margin">Denied List</h2>
+          </ion-list-header>
+          <ion-item *ngFor="let crud of deniedCruds">
+            <ion-label>{{crud.title}}</ion-label>
+            <ion-button color="success" (click)="approveCrud(crud)">Approve</ion-button>
+          </ion-item>
+        </ion-list>
+
+        <ion-list>
+          <ion-list-header *ngIf="allRequests.length > 0">
+            <h2 class="app-no-margin">Request List</h2>
+          </ion-list-header>
+          <ion-item *ngFor="let request of allRequests">
+            <ion-label>{{request.keyword}}</ion-label>
+          </ion-item>
+
+          <ion-list-header class="ion-margin-top" *ngIf="approvedRequests.length> 0">
+            <h2 class="app-no-margin">Approved</h2>
+          </ion-list-header>
+          <ion-item *ngFor="let request of approvedRequests">
+            <ion-label>{{request.keyword}}</ion-label>
+            <ion-button color="danger" (click)="denyRequest(request)">Deny</ion-button>
+          </ion-item>
+
+          <ion-list-header class="ion-margin-top" *ngIf="deniedRequests.length > 0">
+            <h2 class="app-no-margin">Denied</h2>
+          </ion-list-header>
+          <ion-item *ngFor="let request of deniedRequests">
+            <ion-label>{{request.keyword}}</ion-label>
+            <ion-button color="danger" (click)="approveRequest(request)">Approve</ion-button>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

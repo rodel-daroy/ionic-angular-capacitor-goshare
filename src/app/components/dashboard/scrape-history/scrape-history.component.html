@@ -1,0 +1,36 @@
+<ion-header>
+    <ion-toolbar mode="md" color="primary">
+        <ion-buttons slot="start">
+            <ion-button expand="block" mode="md" color="light" (click)="clearAll()">Clear All</ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center">Search History</ion-title>
+        <ion-buttons slot="end">
+            <ion-button expand="block" mode="md" color="light" (click)="modalController.dismiss()">
+                <ion-icon name="close-circle"></ion-icon>
+                <span class="app-m-l-4">Close</span>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-list class="ion-padding">
+        <ion-item-sliding *ngFor="let history of searchHistories; let i = index">
+            <ion-item>
+                <ion-label>
+                    <p class="app-no-margin" *ngIf="i === 0">Keyword: General Search</p>
+                    <p class="app-no-margin" *ngIf="i > 0">Keyword: {{history.keyword}}</p>
+                    <p class="app-no-margin">Location: {{history.address?.city}}</p>
+                    <p class="app-no-margin">{{history.size}} Results on {{formatDate(history.date)}}</p>
+                </ion-label>
+                <ion-button slot="end" (click)="scrapeHistoryView(history)">Open</ion-button>
+            </ion-item>
+
+            <ion-item-options side="start">
+                <ion-item-option color="danger" (click)="deleteHistory(i)">
+                    <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

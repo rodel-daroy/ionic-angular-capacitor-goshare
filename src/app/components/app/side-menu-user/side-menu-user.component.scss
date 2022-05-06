@@ -1,0 +1,11 @@
+.side-menu-user-card {
+  --background: var(--ion-color-primary);
+  color: var(--ion-color-dark);
+  transform: translateZ(0);
+
+  .big-font {
+    margin-right: 30px;
+    font-size: 20px !important;
+    line-height: 100%;
+  }
+}

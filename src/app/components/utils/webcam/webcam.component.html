@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Take image using webcam</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-padding">
+    <ion-row class="ion-align-items-center ion-justify-content-center">
+      <webcam class="mat-elevation-z2" [height]="500" [width]="500" *ngIf="showWebcam"
+              [videoOptions]="videoOptions" [allowCameraSwitch]="allowCameraSwitch" [trigger]="triggerObservable"
+              [switchCamera]="nextWebcamObservable" (imageCapture)="handleImage($event)"
+              (cameraSwitched)="cameraWasSwitched($event)" (initError)="handleInitError($event)"></webcam>
+    </ion-row>
+    <ion-row class="ion-margin-top ion-justify-content-center">
+      <div class="actionBtn" (click)="triggerSnapshot();" title="Take Picture">📸</div>
+    </ion-row>
+  </ion-grid>
+</ion-content>

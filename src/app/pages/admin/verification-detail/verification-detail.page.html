@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-row class="ion-align-items-center ion-justify-content-center">
+        <ion-avatar class="user-avatar-40">
+          <img [src]="selectedPendingUser.avatar ? selectedPendingUser.avatar : variableService.noAvatar" alt=""/>
+        </ion-avatar>
+        <span class="app-ml-8">{{selectedPendingUser?.username}}</span>
+      </ion-row>
+    </ion-title>
+    <ion-buttons slot="end" class="app-w48"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="app-w-100" *ngIf="selectedPendingUser">
+    <ion-row class="app-m-8">
+      <ion-label>
+        <span class="title">Verification Type: </span>
+        <span class="description">{{selectedPendingUser.verifyData.type}}</span>
+      </ion-label>
+    </ion-row>
+
+    <ion-row class="app-m-8">
+      <ion-col size="6">
+        <ion-label>
+          <span class="title">First Name: </span>
+          <span class="description">{{selectedPendingUser.verifyData.firstName}}</span>
+        </ion-label>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <span class="title">Last Name: </span>
+          <span class="description">{{selectedPendingUser.verifyData.lastName}}</span>
+        </ion-label>
+      </ion-col>
+      <ion-col size="12">
+        <ion-label>
+          <span class="title">Phone Number: </span>
+          <span class="description">{{selectedPendingUser.verifyData.phoneNumber}}</span>
+        </ion-label>
+      </ion-col>
+      <ion-col size="12">
+        <ion-label>
+          <span class="title">Address: </span>
+          <span class="description">{{selectedPendingUser.verifyData.address}}</span>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-img class="app-m-8 mat-elevation-z2 verification-image" [src]="selectedPendingUser.verifyData.front"
+               *ngIf="selectedPendingUser.verifyData.front !== ''">
+      </ion-img>
+      <ion-img class="app-m-8 mat-elevation-z2 verification-image" [src]="selectedPendingUser.verifyData.back"
+               *ngIf="selectedPendingUser.verifyData.back !== ''">
+      </ion-img>
+      <ion-img class="app-m-8 mat-elevation-z2 verification-image" [src]="selectedPendingUser.verifyData.live"
+               *ngIf="selectedPendingUser.verifyData.live !== ''">
+      </ion-img>
+    </ion-row>
+
+    <ion-row class="app-mt-35 app-ph-8 app-justify-end">
+      <ion-button color="success" (click)="approveVerification()"> Approve Verification</ion-button>
+      <ion-button color="danger" (click)="denyVerification()"> Deny Verification</ion-button>
+    </ion-row>
+  </ion-grid>
+</ion-content>

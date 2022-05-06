@@ -1,0 +1,67 @@
+.verification-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  mat-grid-list {
+    margin: 20px 0;
+  }
+
+  mat-grid-tile {
+    background: rgb(221, 221, 221);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    border-radius: 12px;
+  }
+
+  mat-grid-tile:last-child {
+    background: #bbf7bb;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+  }
+
+  .mat-grid-tile-content {
+    width: 100%;
+    height: calc(100% - 48px);
+    align-items: center;
+    justify-content: center;
+  }
+
+  mat-card-title-group {
+    margin-left: 12px;
+  }
+
+  mat-card {
+    margin-bottom: 20px;
+  }
+
+  .verified-img {
+    display: flex;
+    width: 50px;
+    height: 40px;
+    background-image: url("https://firebasestorage.googleapis.com/v0/b/goshare360.appspot.com/o/2020%2Fverifications%2Fverified-user.png?alt=media&token=8a070e92-5205-4ee2-b2a0-d77b8e827634");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 5px;
+  }
+
+  .unverified-img {
+    display: inline-block;
+    position: relative;
+    width: 50px;
+    height: 40px;
+    background-image: url("https://firebasestorage.googleapis.com/v0/b/goshare360.appspot.com/o/2020%2Fverifications%2Funverified.png?alt=media&token=657668d7-8084-4968-8bf0-71b7f3e3a5a1");
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 5px;
+  }
+
+}

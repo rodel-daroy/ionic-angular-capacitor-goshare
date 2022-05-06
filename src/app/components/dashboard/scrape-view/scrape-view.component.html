@@ -1,0 +1,37 @@
+<ion-header>
+    <ion-toolbar mode="md" color="primary">
+        <ion-buttons slot="start" class="app-w48">
+            <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center">{{site?.name}}</ion-title>
+        <ion-buttons slot="end" class="app-w48">
+            <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid class="ion-padding">
+        <mat-grid-list cols="6" rowHeight="1:1" gutterSize="8px" *ngFor="let oneGroup of scrapeGroups">
+            <ng-container *ngFor="let scrape of oneGroup">
+                <mat-grid-tile class="mat-elevation-z2 scrape-card-vertical"
+                               [ngStyle]="scrapeBackgroundStyle(scrape)"
+                               [colspan]="scrape.cols" [rowspan]="scrape.rows"
+                               (click)="scrapeDetail(scrape)" *ngIf="scrape.title">
+                    <ion-grid class="app-w-100 app-h-100-scroll">
+                        <ion-img class="scrape-card-vertical-logo-image" [src]="site.logo"></ion-img>
+                        <ion-label class="scrape-card-vertical-category">
+                            {{getScrapeCategory(scrape)}}</ion-label>
+                        <ion-row class="ion-justify-content-center scrape-card-vertical-title">
+                            <ion-label [innerHTML]="scrape.title"></ion-label>
+                        </ion-row>
+                    </ion-grid>
+                </mat-grid-tile>
+            </ng-container>
+        </mat-grid-list>
+    </ion-grid>
+</ion-content>

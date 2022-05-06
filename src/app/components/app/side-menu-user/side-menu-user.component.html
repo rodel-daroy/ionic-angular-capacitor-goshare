@@ -1,0 +1,10 @@
+<ion-grid class="ion-no-padding side-menu-user-card">
+  <ion-list class="ion-no-padding">
+    <ion-item color="dark">
+      <ion-avatar slot="start">
+        <img [src]="currentUser?.avatar || './assets/user/default-profile-pic.jpg'" alt=""/>
+      </ion-avatar>
+      <ion-label class="big-font">{{ currentUser?.username }}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-grid>

@@ -1,0 +1,850 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">SHARE BUILDER</ion-title>
+    <ion-buttons slot="end" class="app-w48"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-padding mat-elevation-z1 crud-create-new-container" *ngIf="cacheService.user">
+
+    <div class="preview-container">
+      <mat-card [ngClass]="viewModes.light ? 'preview-light' : (viewModes.medium?  'preview-medium' : 'preview-dark')"
+                [ngStyle]="selectedBackgroundImage !== '' ? {'background-image' : 'url(' + selectedBackgroundImage + ')'} : {}">
+        <ion-grid class="app-w-100 app-h-100 ion-no-padding">
+          <ion-row class="app-h-100">
+            <ion-col size="5" class="app-h-100">
+              <ion-avatar *ngIf="visibilities.user">
+                <img [src]="cacheService.user.avatar ? cacheService.user.avatar: variableService.noAvatar" alt=""/>
+              </ion-avatar>
+              <div class="app-pt-8 app-pl-4" *ngIf="visibilities.user">
+                <ion-label color="light">{{cacheService.user?.username}}</ion-label>
+              </div>
+              <app-rating-bar max="5" readOnly="true" class="preview-rating" *ngIf="visibilities.rating">
+              </app-rating-bar>
+            </ion-col>
+            <ion-col size="7" class="app-h-100">
+              <ion-grid class="app-h-100 ion-no-padding app-overflow-hidden">
+                <ion-row class="preview-categories" *ngIf="visibilities.category">
+                  <ion-button size="small" class="app-mr-8" *ngFor="let category of selectedCategories">
+                    {{category}}
+                  </ion-button>
+                </ion-row>
+                <ion-row class="preview-price" *ngIf="priceModelDetail && visibilities.price">
+                  <ion-label color="light">{{displayPrice()}}</ion-label>
+                </ion-row>
+                <ion-row class="preview-title" *ngIf="visibilities.title">
+                  <ion-label color="light" class="app-w-100 ion-text-center ion-text-wrap">{{title}}</ion-label>
+                </ion-row>
+                <ion-row class="app-mt-8 preview-description" *ngIf="visibilities.description">
+                  <ion-label color="light" class="app-w-100 ion-text-wrap">{{description}}</ion-label>
+                </ion-row>
+              </ion-grid>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </mat-card>
+
+      <ion-button size="small" color="light" class="preview-demo" *ngIf="demoFlag">DEMO</ion-button>
+
+      <mat-grid-list cols="3" rowHeight="2:.5" class="app-mt-16">
+        <mat-grid-tile>
+          <mat-checkbox fxFlex fxLayoutAlign="start center" [checked]="viewModes.light"
+                        (change)="changeViewMode($event, 'light')">
+            Dark Text
+          </mat-checkbox>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-checkbox fxFlex fxLayoutAlign="start center" [checked]="viewModes.medium"
+                        (change)="changeViewMode($event, 'medium')">
+            Light Text
+          </mat-checkbox>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+
+    <mat-grid-list cols="3" [rowHeight]="desktopPlatform ? '4:1' : '2:1'">
+      <mat-grid-tile>
+        <ion-grid class="ion-no-padding">
+          <mat-slide-toggle class="toggle-btn" [checked]="demoFlag" (change)="demoChecked($event)">
+            <ion-label class="ion-margin-start ion-hide-sm-down">DEMO</ion-label>
+          </mat-slide-toggle>
+          <ion-label class="app-mh-20 app-font-12 ion-hide-sm-up">DEMO</ion-label>
+        </ion-grid>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <ion-grid class="ion-no-padding">
+          <mat-slide-toggle class="toggle-btn" [checked]="visibilities.rating" (change)="ratingChecked($event)">
+            <ion-label class="ion-margin-start ion-hide-sm-down">RATING</ion-label>
+          </mat-slide-toggle>
+          <ion-label class="app-mh-20 app-font-12 ion-hide-sm-up">RATING</ion-label>
+        </ion-grid>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <ion-grid class="ion-no-padding">
+          <mat-slide-toggle class="toggle-btn" [checked]="visibilities.user" (change)="userChecked($event)">
+            <ion-label class="ion-margin-start ion-hide-sm-down">USER</ion-label>
+          </mat-slide-toggle>
+          <ion-label class="app-mh-20 app-font-12 ion-hide-sm-up">USER</ion-label>
+        </ion-grid>
+      </mat-grid-tile>
+    </mat-grid-list>
+
+    <mat-form-field appearance="outline" class="app-w-100">
+      <mat-label>Title</mat-label>
+      <input matInput placeholder="Give it a title" [(ngModel)]="title">
+      <mat-icon matSuffix *ngIf="visibilities.title" (click)="changeVisibility('title')">visibility</mat-icon>
+      <mat-icon matSuffix class="app-text-red" *ngIf="!visibilities.title" (click)="changeVisibility('title')">
+        visibility_off
+      </mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="app-w-100">
+      <mat-select required multiple [(value)]="selectedCategories" (selectionChange)="selectCategories($event)">
+        <mat-option *ngFor="let category of categories" [value]="category">{{category}}</mat-option>
+      </mat-select>
+      <mat-label>Category</mat-label>
+      <mat-hint>Choose one or multiple categories</mat-hint>
+      <mat-icon matSuffix *ngIf="visibilities.category" (click)="changeVisibility('category')">visibility</mat-icon>
+      <mat-icon matSuffix class="app-text-red" *ngIf="!visibilities.category" (click)="changeVisibility('category')">
+        visibility_off
+      </mat-icon>
+    </mat-form-field>
+
+    <mat-divider class="app-mv-20"></mat-divider>
+
+    <mat-accordion>
+      <!-- DESCRIPTION -->
+      <mat-expansion-panel hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h2>DESCRIPTION</h2>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span class="mat-spacer"></span>
+            <mat-icon class="check-circle" *ngIf="stepCheck.description">check_circle</mat-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-form-field appearance="outline" class="app-w-100">
+          <mat-label>Basic Description</mat-label>
+          <input matInput placeholder="Please describe your share" [(ngModel)]="description">
+          <mat-icon matSuffix class="check-circle" *ngIf="visibilities.description"
+                    (click)="changeVisibility('description')">
+            visibility
+          </mat-icon>
+          <mat-icon matSuffix class="app-text-red" *ngIf="!visibilities.description"
+                    (click)="changeVisibility('description')">
+            visibility_off
+          </mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="app-w-100">
+          <mat-label>Detailed Description</mat-label>
+          <textarea matInput placeholder="Enter more specific details" rows="5" [(ngModel)]="detailedDescription">
+          </textarea>
+        </mat-form-field>
+
+        <mat-action-row>
+          <button mat-button color="primary" (click)="save('description')">SAVE</button>
+        </mat-action-row>
+      </mat-expansion-panel>
+
+
+      <!-- MEDIA -->
+      <mat-expansion-panel hideToggle [expanded]="step === 1" (opened)="setStep(1)">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h2>MEDIA / GALLERY</h2>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span class="mat-spacer"></span>
+            <mat-icon class="check-circle" *ngIf="stepCheck.media">check_circle</mat-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <ion-grid class="ion-no-padding media-gallery-container">
+          <ion-row class="ion-padding-top step-1-main-background">
+            <ion-card class="empty-image mat-elevation-z4" (click)="addMainBackgroundImage()"
+                      *ngIf="selectedBackgroundImage === ''">
+              <ion-label class="ion-text-center">ADD MAIN BACKGROUND IMAGE</ion-label>
+            </ion-card>
+            <ion-card class="mat-elevation-z4"
+                      [ngStyle]="selectedBackgroundImage !== '' ? {'background-image' : 'url(' + selectedBackgroundImage + ')'} : {}"
+                      *ngIf="selectedBackgroundImage !== ''">
+              <button mat-icon-button (click)="removeMainBackground()">
+                <ion-icon name="close-outline"></ion-icon>
+              </button>
+              <button mat-icon-button class="drawing-icon" (click)="imageDrawing('main', 0)">
+                <ion-icon name="color-palette-outline"></ion-icon>
+              </button>
+            </ion-card>
+            <ion-label class="ion-text-wrap app-w-100" *ngIf="!editMainDescriptionState"
+                       (click)="addMainDescription(description === '' ? '' : description)"
+                       [ngClass]="description ==='' ? 'empty-description' : ''">{{description === '' ? '+ Add description' : description}}</ion-label>
+            <ion-input class="empty-description app-w-100" *ngIf="editMainDescriptionState"
+                       [(ngModel)]="editMainDescription" (keyup.enter)="saveMainDescription()"></ion-input>
+          </ion-row>
+          <ion-row class="ion-no-padding ion-padding-top step-1-images">
+            <div class="step-5-image" *ngFor="let image of moreImages; let i = index">
+              <ion-card class="mat-elevation-z4">
+                <ion-img [src]="image.image"></ion-img>
+                <button mat-icon-button (click)="removeMoreImage(i)">
+                  <ion-icon name="close-outline"></ion-icon>
+                </button>
+                <button mat-icon-button class="drawing-icon" (click)="imageDrawing('more', i)">
+                  <ion-icon name="color-palette-outline"></ion-icon>
+                </button>
+              </ion-card>
+              <ion-input class="empty-description app-w-100" placeholder="+ Add description"
+                         [(ngModel)]="image.description"></ion-input>
+            </div>
+          </ion-row>
+          <ion-row class="ion-margin-top">
+            <ion-card class="mat-elevation-z4 step-1-add-image empty-image" (click)="addMoreImage()">
+              <ion-label>ADD IMAGE</ion-label>
+            </ion-card>
+          </ion-row>
+          <input hidden type="file" id="step1ImageCropper1" (change)="fileChangeEvent($event)">
+          <input hidden multiple type="file" id="step1ImageCropper2" (change)="fileChangeEvent($event)">
+        </ion-grid>
+
+        <mat-action-row>
+          <button mat-button color="primary" (click)="save('media')">SAVE</button>
+        </mat-action-row>
+      </mat-expansion-panel>
+
+
+      <!-- MAP -->
+      <mat-expansion-panel hideToggle [expanded]="step === 2" (opened)="setStep(2)">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h2>MAP / LOCATION</h2>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span class="mat-spacer"></span>
+            <mat-icon class="check-circle" *ngIf="stepCheck.map">check_circle</mat-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <ion-grid class="ion-no-padding map-location-container">
+          <ion-row class="app-map-box" *ngIf="addressList.length > 0">
+            <app-google-map class="app-w-100 mat-elevation-z4" #createCRUDMap [mapOptions]="mapOptions">
+            </app-google-map>
+          </ion-row>
+
+          <ion-row class="ion-justify-content-between ion-margin-top">
+            <button mat-raised-button color="accent" class="app-mb-16" (click)="openAddressModal()">
+              ENTER ADDRESS
+            </button>
+            <button mat-raised-button color="primary" class="app-mb-16" (click)="openGpsModal()">
+              CUSTOM GPS LOCATION
+            </button>
+          </ion-row>
+
+          <ion-row class="ion-padding-horizontal">
+            <ion-label>Adjust Search Radius</ion-label>
+          </ion-row>
+          <ion-row class="ion-margin-top ion-align-items-center ion-justify-content-center">
+            <ion-col size="1" class="app-justify-end">
+              <ion-icon name="pin"></ion-icon>
+            </ion-col>
+            <ion-col size="10" class="ion-no-padding">
+              <ion-item lines="none" class="app-w-100">
+                <ion-range min="0" max="14" step="2" snaps="true" [value]="radius" (ionChange)="change($event)">
+                </ion-range>
+              </ion-item>
+            </ion-col>
+            <ion-col size="1">
+              <ion-icon name="pin"></ion-icon>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="1"></ion-col>
+            <ion-col size="10">
+              <ion-row class="app-w-100 app-pl-8 ion-align-items-center ion-justify-content-between">
+                <ion-label (click)="setValue(0)">10</ion-label>
+                <ion-label (click)="setValue(2)">40</ion-label>
+                <ion-label (click)="setValue(4)">80</ion-label>
+                <ion-label (click)="setValue(6)">200</ion-label>
+                <ion-label (click)="setValue(8)">500</ion-label>
+                <ion-label (click)="setValue(10)">1000</ion-label>
+                <ion-label (click)="setValue(12)">2000</ion-label>
+                <ion-label (click)="setValue(14)">4000</ion-label>
+              </ion-row>
+            </ion-col>
+            <ion-col size="1"></ion-col>
+          </ion-row>
+
+          <mat-divider></mat-divider>
+
+          <ion-row>
+            <mat-list class="app-w-100 address-list">
+              <h3 mat-subheader>Address List</h3>
+              <mat-list-item *ngFor="let address of addressList; let i = index">
+                <mat-icon matListIcon>location_on</mat-icon>
+                <p matLine> {{address.formatted_address }} </p>
+                <button mat-icon-button (click)="deleteAddress(i)">
+                  <mat-icon matListIcon>delete</mat-icon>
+                </button>
+              </mat-list-item>
+            </mat-list>
+          </ion-row>
+        </ion-grid>
+
+        <mat-action-row>
+          <button mat-button color="primary" (click)="save('map')">SAVE</button>
+        </mat-action-row>
+      </mat-expansion-panel>
+
+
+      <!-- AVAILABILITY / PRICING -->
+      <mat-expansion-panel hideToggle [expanded]="step === 3" (opened)="setStep(3)">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h2>AVAILABILITY / PRICING</h2>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span class="mat-spacer"></span>
+            <mat-icon class="check-circle" *ngIf="stepCheck.availability">check_circle</mat-icon>
+          </mat-panel-description>
+
+        </mat-expansion-panel-header>
+
+        <ion-grid class="ion-no-padding availability-pricing-container">
+          <p class="mat-small">Add multiple date ranges to suit your share availability</p>
+          <mat-form-field class="app-w-100 datepicker-hidden">
+            <input matInput placeholder="Choose a date" [satDatepicker]="datePicker" [(ngModel)]="dateRange"
+                   (ngModelChange)="selectedDate()">
+            <sat-datepicker #datePicker [rangeMode]="true"></sat-datepicker>
+            <sat-datepicker-toggle matSuffix [for]="datePicker"></sat-datepicker-toggle>
+          </mat-form-field>
+
+          <button mat-raised-button color="accent" (click)="datePicker.open()">
+            <mat-icon matSuffix>playlist_add</mat-icon>
+            Add Date Range
+          </button>
+
+          <mat-form-field class="app-w-100 ion-margin-top">
+            <textarea matInput placeholder="Availability Details" [(ngModel)]="availabilityDescription"></textarea>
+          </mat-form-field>
+
+          <mat-list class="app-w-100">
+            <mat-list-item *ngFor="let item of dateRangeList; let i = index">
+              <p matLine>{{item.start}} -- {{item.end}}</p>
+              <button mat-icon-button (click)="editDateRange(i)">
+                <mat-icon matListIcon>edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteDateRange(i)">
+                <mat-icon matListIcon>delete</mat-icon>
+              </button>
+            </mat-list-item>
+          </mat-list>
+
+
+          <mat-divider></mat-divider>
+
+
+          <ion-row class="ion-align-items-center ion-justify-content-between">
+            <h3>Pricing</h3>
+            <mat-icon *ngIf="visibilities.price" (click)="changeVisibility('price')">
+              visibility
+            </mat-icon>
+            <mat-icon class="app-text-red" *ngIf="!visibilities.price" (click)="changeVisibility('price')">
+              visibility_off
+            </mat-icon>
+          </ion-row>
+
+          <ion-list class="ion-no-padding price-model-list">
+            <ion-list-header class="ion-no-padding">
+              <mat-slide-toggle class="app-mb-16" [checked]="priceToggleState" (change)="priceSlideChange($event)">
+                <ion-label class="ion-margin-start">{{priceCriteria}}</ion-label>
+              </mat-slide-toggle>
+            </ion-list-header>
+            <ion-item>
+              <ion-select mode="ios" placeholder="Add A Pricing Model" interface="popover"
+                          class="app-w-100" [interfaceOptions]="{cssClass: 'price-model-popover'}"
+                          (ionChange)="selectPriceModel($event)" [disabled]="!priceToggleState">
+                <ion-select-option *ngFor="let model of priceModels" [value]="model">
+                  {{model}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+
+          <mat-expansion-panel hideToggle class="price-model-panel" [expanded]="true"
+                               *ngIf="priceModel === 'Hourly' && priceToggleState">
+            <mat-expansion-panel-header>
+              <mat-panel-description>
+                <h2>Hourly</h2>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <form [formGroup]="hourlyPriceForm">
+              <mat-form-field appearance="outline" class="app-w-100">
+                <mat-label>Enter hourly price</mat-label>
+                <mat-icon matSuffix>monetization_on</mat-icon>
+                <input matInput type="number" formControlName="hourlyPrice">
+              </mat-form-field>
+
+              <ion-row>
+                <ion-col>
+                  <button mat-raised-button class="app-w-100" (click)="addHours = !addHours">Add Hours</button>
+                </ion-col>
+                <ion-col>
+                  <button mat-raised-button class="app-w-100" (click)="addComments =!addComments">Add Comments</button>
+                </ion-col>
+              </ion-row>
+
+              <ng-container *ngIf="addHours">
+                <h5>Available Hours</h5>
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>Start</mat-label>
+                  <input matInput placeholder="Start time" formControlName="hourlyStart"
+                         [ngxTimepicker]="hourlyStartPicker">
+                  <ngx-material-timepicker #hourlyStartPicker></ngx-material-timepicker>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>End</mat-label>
+                  <input matInput placeholder="End time" formControlName="hourlyEnd" [ngxTimepicker]="hourlyEndPicker">
+                  <ngx-material-timepicker #hourlyEndPicker></ngx-material-timepicker>
+                </mat-form-field>
+              </ng-container>
+
+              <mat-form-field class="app-w-100" *ngIf="addComments">
+                <mat-label>Host Comments</mat-label>
+                <textarea matInput placeholder="Enter details" formControlName="hourlyComments"></textarea>
+              </mat-form-field>
+            </form>
+
+            <mat-action-row>
+              <ion-progress-bar type="indeterminate" *ngIf="priceSavingProcess"></ion-progress-bar>
+              <button mat-button color="primary" (click)="savePriceModel('Hourly')">Save</button>
+            </mat-action-row>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel hideToggle class="price-model-panel" [expanded]="true"
+                               *ngIf="priceModel === 'Half Day' && priceToggleState">
+            <mat-expansion-panel-header>
+              <mat-panel-description>
+                <h2>Half Day</h2>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <form [formGroup]="halfDayPriceForm">
+              <mat-form-field appearance="outline" class="app-w-100">
+                <mat-label>Half Day Price</mat-label>
+                <mat-icon matSuffix>monetization_on</mat-icon>
+                <input matInput type="number" formControlName="halfDayPrice">
+              </mat-form-field>
+
+              <ion-row>
+                <ion-col>
+                  <button mat-raised-button class="app-w-100" (click)="addHours = !addHours">Add Hours</button>
+                </ion-col>
+                <ion-col>
+                  <button mat-raised-button class="app-w-100" (click)="addComments =!addComments">Add Comments</button>
+                </ion-col>
+              </ion-row>
+
+              <ng-container *ngIf="addHours">
+                <h5>Morning</h5>
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>Start</mat-label>
+                  <input matInput placeholder="Start time" formControlName="morningStart"
+                         [ngxTimepicker]="halfDayMorningStartPicker">
+                  <ngx-material-timepicker #halfDayMorningStartPicker></ngx-material-timepicker>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>End</mat-label>
+                  <input matInput placeholder="End time" formControlName="morningEnd"
+                         [ngxTimepicker]="halfDayMorningEndPicker">
+                  <ngx-material-timepicker #halfDayMorningEndPicker></ngx-material-timepicker>
+                </mat-form-field>
+
+                <h5>Afternoon</h5>
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>Start</mat-label>
+                  <input matInput placeholder="Start time" formControlName="afternoonStart"
+                         [ngxTimepicker]="halfDayAfternoonStartPicker">
+                  <ngx-material-timepicker #halfDayAfternoonStartPicker></ngx-material-timepicker>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>End</mat-label>
+                  <input matInput placeholder="End time" formControlName="afternoonEnd"
+                         [ngxTimepicker]="halfDayAfternoonEndPicker">
+                  <ngx-material-timepicker #halfDayAfternoonEndPicker></ngx-material-timepicker>
+                </mat-form-field>
+              </ng-container>
+
+              <mat-form-field class="app-w-100" *ngIf="addComments">
+                <mat-label>Host Comments</mat-label>
+                <textarea matInput placeholder="Enter details" formControlName="halfDayComments"></textarea>
+              </mat-form-field>
+            </form>
+
+            <mat-action-row>
+              <ion-progress-bar type="indeterminate" *ngIf="priceSavingProcess"></ion-progress-bar>
+              <button mat-button color="primary" (click)="savePriceModel('Half Day')">Save</button>
+            </mat-action-row>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel hideToggle class="price-model-panel" [expanded]="true"
+                               *ngIf="priceModel === 'Full Day' && priceToggleState">
+            <mat-expansion-panel-header>
+              <mat-panel-description>
+                <h2>Full Day</h2>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <form [formGroup]="fullDayPriceForm">
+              <mat-form-field appearance="outline" class="app-w-100">
+                <mat-label>Full Day Price</mat-label>
+                <mat-icon matSuffix>monetization_on</mat-icon>
+                <input matInput type="number" formControlName="fullDayPrice">
+              </mat-form-field>
+
+              <ion-row>
+                <ion-col>
+                  <button mat-raised-button class="app-w-100" (click)="addHours = !addHours">Add Hours</button>
+                </ion-col>
+                <ion-col>
+                  <button mat-raised-button class="app-w-100" (click)="addComments =!addComments">Add Comments</button>
+                </ion-col>
+              </ion-row>
+
+              <ng-container *ngIf="addHours">
+                <h5>Full Day Hours</h5>
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>Start</mat-label>
+                  <input matInput placeholder="Start time" formControlName="fullDayStart"
+                         [ngxTimepicker]="fullDayStartPicker">
+                  <ngx-material-timepicker #fullDayStartPicker></ngx-material-timepicker>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>End</mat-label>
+                  <input matInput placeholder="End time" formControlName="fullDayEnd"
+                         [ngxTimepicker]="fullDayEndPicker">
+                  <ngx-material-timepicker #fullDayEndPicker></ngx-material-timepicker>
+                </mat-form-field>
+              </ng-container>
+
+              <mat-form-field class="app-w-100" *ngIf="addComments">
+                <mat-label>Host Comments</mat-label>
+                <textarea matInput placeholder="Enter details" formControlName="fullDayComments"></textarea>
+              </mat-form-field>
+            </form>
+
+            <mat-action-row>
+              <ion-progress-bar type="indeterminate" *ngIf="priceSavingProcess"></ion-progress-bar>
+              <button mat-button color="primary" (click)="savePriceModel('Full Day')">Save</button>
+            </mat-action-row>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel hideToggle class="price-model-panel" [expanded]="true"
+                               *ngIf="priceModel === 'Guest' && priceToggleState">
+            <mat-expansion-panel-header>
+              <mat-panel-description>
+                <h2>Per Guest</h2>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <h5>Use Guest Module</h5>
+            <form [formGroup]="guestPriceForm">
+              <mat-form-field appearance="outline" class="app-w-100">
+                <mat-form-field class="guests-form">
+                  <input matInput type="number" placeholder="Price ($)" formControlName="guestPrice">
+                </mat-form-field>
+                <mat-icon matSuffix *ngIf="guestPriceForm.value.infantChecked">check_circle
+                </mat-icon>
+              </mat-form-field>
+
+              <mat-grid-list cols="3" rowHeight="2:.5">
+                <mat-grid-tile>
+                  <mat-checkbox [checked]="guestCheckModes.adult" (change)="changeGuestMode($event, 'adult')">
+                    Adult
+                  </mat-checkbox>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                  <mat-checkbox [checked]="guestCheckModes.child" (change)="changeGuestMode($event, 'child')">
+                    Child
+                  </mat-checkbox>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                  <mat-checkbox [checked]="guestCheckModes.infant" (change)="changeGuestMode($event, 'infant')">
+                    Infant
+                  </mat-checkbox>
+                </mat-grid-tile>
+              </mat-grid-list>
+
+              <mat-form-field class="app-w-100">
+                <mat-label>Host Comments</mat-label>
+                <textarea matInput placeholder="Optional" formControlName="guestComments"></textarea>
+              </mat-form-field>
+            </form>
+
+            <mat-action-row>
+              <ion-progress-bar type="indeterminate" *ngIf="priceSavingProcess"></ion-progress-bar>
+              <button mat-button color="primary" (click)="addGuest()">ADD</button>
+            </mat-action-row>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel hideToggle class="price-model-panel" [expanded]="true"
+                               *ngIf="priceModel === 'Service' && priceToggleState">
+            <mat-expansion-panel-header>
+              <mat-panel-description>
+                <h2>Service</h2>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <form [formGroup]="servicePriceForm">
+              <mat-form-field appearance="outline" class="app-w-100">
+                <mat-label>Total Service Price</mat-label>
+                <mat-icon matSuffix>monetization_on</mat-icon>
+                <input matInput type="number" formControlName="servicePrice">
+              </mat-form-field>
+
+              <mat-form-field class="app-w-100">
+                <mat-label>Host Comments</mat-label>
+                <textarea matInput placeholder="Enter details" formControlName="serviceComments"></textarea>
+              </mat-form-field>
+            </form>
+
+            <mat-action-row>
+              <ion-progress-bar type="indeterminate" *ngIf="priceSavingProcess"></ion-progress-bar>
+              <button mat-button color="primary" (click)="savePriceModel('Service')">Save</button>
+            </mat-action-row>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel hideToggle class="price-model-panel" [expanded]="true"
+                               *ngIf="priceModel === 'Price Range' && priceToggleState">
+            <mat-expansion-panel-header>
+              <mat-panel-description>
+                <h2>Price Range</h2>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <form [formGroup]="priceRangeForm">
+              <ion-row class="ion-justify-content-between">
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>From</mat-label>
+                  <input matInput type="number" formControlName="priceRangeFrom">
+                  <mat-icon matSuffix>monetization_on</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="app-w-45">
+                  <mat-label>To</mat-label>
+                  <input matInput type="number" formControlName="priceRangeTo">
+                  <mat-icon matSuffix>monetization_on</mat-icon>
+                </mat-form-field>
+              </ion-row>
+
+              <ion-row class="ion-margin-bottom">
+                <ion-col>
+                  <button mat-raised-button class="app-w-100" (click)="addComments =!addComments">Add Note</button>
+                </ion-col>
+              </ion-row>
+
+              <mat-form-field class="app-w-100" *ngIf="addComments">
+                <mat-label>Ex: To be arranged</mat-label>
+                <textarea matInput placeholder="Enter details" formControlName="priceRangeComments"></textarea>
+              </mat-form-field>
+            </form>
+
+            <mat-action-row>
+              <ion-progress-bar type="indeterminate" *ngIf="priceSavingProcess"></ion-progress-bar>
+              <button mat-button color="primary" (click)="savePriceModel('Price Range')">Save</button>
+            </mat-action-row>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel hideToggle class="price-model-panel" [expanded]="true"
+                               *ngIf="priceModel === 'Weekly, Weekend, Nightly' && priceToggleState">
+
+            <form [formGroup]="weeklyPriceForm" class="app-pt-20">
+              <mat-form-field appearance="outline" class="app-w-100">
+                <mat-label>Enter Price</mat-label>
+                <mat-icon matPrefix>monetization_on</mat-icon>
+                <input matInput type="text" [formControlName]="'weeklyPrice'">
+                <mat-hint class="app-font-10">Enter your Price, Choose an option below, click Add
+                </mat-hint>
+              </mat-form-field>
+
+              <mat-grid-list cols="3" rowHeight="2:.5">
+                <mat-grid-tile>
+                  <mat-checkbox [checked]="weeklyCheckModes.weekly" (change)="changeWeeklyMode($event, 'weekly')">
+                    Weekly
+                  </mat-checkbox>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                  <mat-checkbox [checked]="weeklyCheckModes.weekend" (change)="changeWeeklyMode($event, 'weekend')">
+                    Weekend
+                  </mat-checkbox>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                  <mat-checkbox [checked]="weeklyCheckModes.nightly" (change)="changeWeeklyMode($event, 'nightly')">
+                    Nightly
+                  </mat-checkbox>
+                </mat-grid-tile>
+              </mat-grid-list>
+
+              <mat-form-field appearance="outline" class="app-w-100">
+                <mat-label>Host Comments</mat-label>
+                <textarea matInput placeholder="Optional" formControlName="weeklyComments"></textarea>
+              </mat-form-field>
+            </form>
+
+            <mat-action-row>
+              <ion-progress-bar type="indeterminate" *ngIf="priceSavingProcess"></ion-progress-bar>
+
+              <button mat-button color="primary" (click)="addWeekly()">ADD</button>
+            </mat-action-row>
+          </mat-expansion-panel>
+
+
+          <ion-list lines="none" class="host-results" *ngIf="priceDetailSaved || mode === 'remote update'">
+            <ion-list-header lines="inset">
+              <ion-label><h2>SAVED PRICING</h2></ion-label>
+              <ion-button color="danger" (click)="clearSavedPrice()">Clear</ion-button>
+            </ion-list-header>
+            <ng-container *ngIf="priceModel !== 'Weekly, Weekend, Nightly' && priceModel !== 'Guest'">
+              <ion-item-sliding>
+                <ion-item color="primary">
+                  <ion-label>
+                    <h4 class="ion-text-wrap">{{priceModel}}</h4>
+                    <p>{{displayComments()}}</p>
+                  </ion-label>
+                  <div slot="end">
+                    <button mat-flat-button color="primary">${{displaySavedPrice()}}</button>
+                  </div>
+                </ion-item>
+                <ion-item-options side="end">
+                  <ion-item-option color="danger" (click)="deleteSavedPriceDetails()">Delete</ion-item-option>
+                </ion-item-options>
+              </ion-item-sliding>
+            </ng-container>
+            <ng-container *ngIf="priceModel === 'Guest' && guestPriceDetails.length > 0">
+              <ion-item-sliding *ngFor="let item of guestPriceDetails; let i = index">
+                <ion-item color="primary">
+                  <ion-label>
+                    <h4 class="ion-text-wrap">{{item.type}}</h4>
+                    <p>{{item.comments}}</p>
+                  </ion-label>
+                  <div slot="end">
+                    <button mat-flat-button color="primary">${{item.price}}</button>
+                  </div>
+                </ion-item>
+                <ion-item-options side="end">
+                  <ion-item-option color="danger" (click)="deleteGuest(i)">Delete</ion-item-option>
+                </ion-item-options>
+              </ion-item-sliding>
+            </ng-container>
+            <ng-container
+              *ngIf="priceModel === 'Weekly, Weekend, Nightly' && weeklyPriceDetails.length > 0">
+              <ion-item-sliding *ngFor="let item of weeklyPriceDetails; let i = index">
+                <ion-item color="primary">
+                  <ion-label>
+                    <h4 class="ion-text-wrap">{{item.type}}</h4>
+                    <p>{{item.comments}}</p>
+                  </ion-label>
+                  <div slot="end">
+                    <button mat-flat-button color="primary">${{item.price}}</button>
+                  </div>
+                </ion-item>
+                <ion-item-options side="end">
+                  <ion-item-option color="danger" (click)="deleteWeekly(i)">Delete</ion-item-option>
+                </ion-item-options>
+              </ion-item-sliding>
+            </ng-container>
+            <ion-note>*Made a mistake? Swipe to delete. Or press the CLEAR button</ion-note>
+          </ion-list>
+        </ion-grid>
+
+        <mat-action-row>
+          <button mat-button color="warn" (click)="prevStep()">Previous</button>
+          <button mat-button color="primary" (click)="checkPriceDetailSaved()">SAVE</button>
+        </mat-action-row>
+      </mat-expansion-panel>
+
+
+      <!-- CONTACT -->
+      <mat-expansion-panel hideToggle [expanded]="step === 4" (opened)="setStep(4)">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h2>CONTACT PREFERENCES</h2>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span class="mat-spacer"></span>
+            <mat-icon class="check-circle" *ngIf="stepCheck.contact">check_circle</mat-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <ion-grid class="ion-no-padding">
+          <ion-row class="ion-margin-top">
+            <ion-label class="app-w-100">How would you like to be contacted?</ion-label>
+            <form class="app-w-100 ion-margin-top contact-settings-container" [formGroup]="contactSettingsForm">
+              <section class="ion-padding-bottom">
+                <mat-slide-toggle [formControlName]="'phoneNumberState'" (change)="changePhoneNumber($event)">
+                  Phone Number
+                </mat-slide-toggle>
+              </section>
+              <mat-form-field appearance="outline" class="app-w-100">
+                <mat-label>Phone Number</mat-label>
+                <mat-icon matSuffix>event_available</mat-icon>
+                <input matInput placeholder="1 801-718-3984" [formControlName]="'phoneNumber'">
+              </mat-form-field>
+
+              <section class="ion-padding-bottom">
+                <mat-slide-toggle [formControlName]="'emailState'" (change)="changeEmail($event)">
+                  Email
+                </mat-slide-toggle>
+              </section>
+              <mat-form-field appearance="outline" class="app-w-100">
+                <mat-label>Email</mat-label>
+                <mat-icon matSuffix>event_available</mat-icon>
+                <input matInput placeholder="maxknox007@gmail.com" [formControlName]="'email'">
+              </mat-form-field>
+
+              <section>
+                <mat-slide-toggle [formControlName]="'chatState'">Chat</mat-slide-toggle>
+              </section>
+            </form>
+          </ion-row>
+        </ion-grid>
+
+        <mat-action-row>
+          <button mat-button color="warn" (click)="prevStep()">Previous</button>
+          <button mat-button color="primary" (click)="save('contact')">SAVE</button>
+        </mat-action-row>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <ion-item-divider style="margin: 10px 0;"></ion-item-divider>
+
+    <mat-toolbar class="crud-create-new-toolbar ion-hide-sm-down">
+      <button mat-flat-button color="accent" (click)="unList()" *ngIf="mode === 'remote update'">UNLIST</button>
+      <button mat-flat-button color="warn" class="app-ml-16" (click)="delete()" *ngIf="mode === 'remote update'">
+        DELETE
+      </button>
+
+      <span class="mat-spacer"></span>
+
+      <button mat-flat-button color="primary" (click)="submit()">SUBMIT</button>
+    </mat-toolbar>
+
+    <mat-toolbar class="crud-create-new-toolbar ion-hide-sm-up">
+      <button mat-flat-button color="accent" (click)="unList()" *ngIf="mode === 'remote update'">UNLIST</button>
+      <button mat-flat-button color="warn" class="app-ml-4" (click)="delete()" *ngIf="mode === 'remote update'">
+        DELETE
+      </button>
+      <button mat-flat-button color="warn" class="app-ml-4" (click)="preview()" *ngIf="mode === 'remote update'">
+        PREVIEW
+      </button>
+
+      <span class="mat-spacer"></span>
+
+      <button mat-flat-button color="primary" (click)="submit()">SUBMIT</button>
+    </mat-toolbar>
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "goshare360": {
+      "hosting": {
+        "app": [
+          "goshare360"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "goshare360"
+  }
+}

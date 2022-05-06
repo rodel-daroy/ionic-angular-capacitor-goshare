@@ -1,0 +1,239 @@
+* {
+  font-family: 'Source Sans Pro', sans-serif;
+  color: rgb(54, 54, 54);
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+  background-color: rgb(49, 49, 49);
+  font-family: 'Source Sans Pro', sans-serif;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: normal;
+  transition: all 0.5s ease;
+}
+
+div.logo-head {
+  width: 200px;
+  background-color: rgb(202, 202, 202);
+  border-radius: 10px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-self: center;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s ease;
+}
+
+div.logo-head:hover {
+  background-color: rgba(255, 255, 255, 0.952);
+  cursor: pointer;
+  transition: all 0.5s ease;
+}
+
+div.logo {
+  height: 90px;
+  width: 180px;
+  background: url(../../../assets/logo/original.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  margin: 20px 20px -30px 20px;
+  color: white;
+  transition: all 0.5s ease;
+}
+
+span.logo-text {
+  margin: 10px 0 10px;
+  font-size: 10px;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  color: #4a4a4a;
+  text-align: center;
+  text-shadow: 2px 2px 4px #00000050;
+}
+
+span {
+  color: #313131;
+  cursor: pointer;
+}
+
+div.main {
+  width: 100%;
+  background-color: #ececec;
+  background-image: url(https://firebasestorage.googleapis.com/v0/b/max-knox.appspot.com/o/2021%2Fbackgrounds%2F3.jpg?alt=media&token=96d85c84-065b-4add-8130-54eccdaa57bf);
+  background-position: center center;
+  background-size: cover;
+  margin-top: 20px;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+
+/* Animated Home Text  */
+#container {
+  width: 100%;
+  font-size: 36px;
+  font-weight: bold;
+  color: rgb(88, 88, 88);
+  text-align: center;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+#flip {
+  height: 45px;
+  margin: 8px 0 12px;
+  overflow: hidden;
+}
+
+#flip > div {
+  height: 90px;
+}
+
+#flip > div p {
+  width: 100%;
+  height: 45px;
+  background: #16987e;
+  border-radius: 4px;
+  margin: 0 auto 45px;
+  padding: 12px !important;
+  color: #fff;
+  display: inline-block;
+}
+
+#flip div:first-child p {
+  background: #2085c8;
+}
+
+#flip div:last-child p {
+  background: #c83f2f;
+}
+
+#flip div:first-child {
+  animation: show 8s linear infinite;
+}
+
+@keyframes show {
+  0% {
+    margin-top: -270px;
+  }
+  5% {
+    margin-top: -180px;
+  }
+  33% {
+    margin-top: -180px;
+  }
+  38% {
+    margin-top: -90px;
+  }
+  66% {
+    margin-top: -90px;
+  }
+  71% {
+    margin-top: 0;
+  }
+  99.99% {
+    margin-top: 0;
+  }
+  100% {
+    margin-top: -270px;
+  }
+}
+
+.action h3 {
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+  color: white;
+  display: flex;
+  align-self: center;
+  justify-self: center;
+}
+
+/* END Animated Home Text  */
+
+@media (orientation: landscape) {
+  .action-container {
+    width: 500px;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    justify-self: space-around;
+    justify-content: space-around;
+  }
+
+  .action {
+    width: 200px;
+    height: 80px;
+    background-color: rgb(39, 39, 39);
+    margin-bottom: 120px;
+    border-radius: 14px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    justify-self: space-around;
+    transition: all 0.5s ease;
+  }
+  .action:hover {
+    background-color: #f2a739;
+    color: rgb(36, 36, 36);
+    cursor: pointer;
+    transition: all 0.5s ease;
+  }
+  .action:hover h3 {
+    color: rgb(29, 29, 29);
+  }
+}
+
+
+@media (orientation: portrait) {
+  #container {
+    font-size: 22px;
+  }
+  .action-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    justify-self: space-around;
+    justify-content: space-around;
+  }
+
+  .action {
+    width: 44%;
+    height: 80px;
+    background-color: rgb(39, 39, 39);
+    margin-bottom: 120px;
+    border-radius: 14px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    justify-self: space-around;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  #container {
+    font-size: 20px;
+  }
+  #flip {
+    margin: 4px 0 8px;
+  }
+}

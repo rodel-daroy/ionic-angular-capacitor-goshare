@@ -1,0 +1,51 @@
+<ion-header>
+    <ion-toolbar mode="md" color="primary">
+        <ion-buttons slot="start" class="app-w48">
+            <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center">Search All GS360</ion-title>
+        <ion-buttons slot="end" class="app-w48">
+            <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid class="app-w-100 ion-padding">
+        <ion-row class="ion-justify-content-end">
+            <ion-button color="light" [matMenuTriggerFor]="filter">
+                <ion-label class="app-w120">{{selectedFilterKey}}</ion-label>
+                <ion-icon slot="end" name="caret-down-sharp" class="ion-margin-start app-font-12"></ion-icon>
+            </ion-button>
+            <mat-menu #filter="matMenu">
+                <button mat-menu-item *ngFor="let filterKey of filterKeys" (click)="selectFilterKey(filterKey)">
+                    {{filterKey}}
+                </button>
+            </mat-menu>
+        </ion-row>
+
+        <ion-row class="category-list" *ngIf="selectedFilterKey === 'Category'">
+            <ion-button size="small" *ngFor="let category of categories" (click)="selectCategory(category)"
+                        [color]="selectedCategory === category ? 'danger' : 'light'">
+                {{category}}
+            </ion-button>
+        </ion-row>
+
+        <ion-list lines="none">
+            <ion-item class="app-ion-item-no-padding" *ngFor="let crud of filteredCrud" (click)="openCrudDetail(crud)">
+                <ion-thumbnail slot="start" class="app-w96 app-h96">
+                    <img [src]="crud.main_background ? crud.main_background : variableService.emptyImage" [alt]="''">
+                </ion-thumbnail>
+
+                <ion-label>
+                    <h4 class="app-no-margin">{{crud.title}}</h4>
+                    <p class="ion-no-margin">{{crud.description}}</p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </ion-grid>
+</ion-content>

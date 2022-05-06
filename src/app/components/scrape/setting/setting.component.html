@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Search Settings</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item color="light">
+    <div slot="start">
+      <input slot="start" type="tel" class="scrape-limit" [(ngModel)]="scrapeLimit"/>
+    </div>
+    <ion-label>
+      <h2 class="app-no-margin ion-text-wrap">Number of items to scrape</h2>
+    </ion-label>
+    <div slot="end">
+      <ion-button color="primary" (click)="update()">Update</ion-button>
+    </div>
+  </ion-item>
+
+  <ion-item color="light">
+    <p slot="end">*Turn off specific websites by tapping the toggle button</p>
+  </ion-item>
+
+  <ion-list>
+    <ion-reorder-group disabled="false" (ionItemReorder)="doReorder($event)">
+      <ion-item *ngFor="let site of allScrapeSites">
+        <ion-reorder>
+          <div class="site-logo">
+            <img [src]="site.logo" alt=""/>
+          </div>
+        </ion-reorder>
+        <ion-reorder>
+          <ion-label class="ion-margin-start">
+            <h2 class="app-no-margin app-text-nowrap">{{site.name}}</h2>
+            <p class="app-no-margin app-text-nowrap">{{site.category}}</p>
+          </ion-label>
+        </ion-reorder>
+        <ion-button slot="end" color="primary" (click)="view(site)">View</ion-button>
+        <ion-toggle slot="end" color="primary" [checked]="site.checked" (ionChange)="ionChange(site,$event)">
+        </ion-toggle>
+      </ion-item>
+    </ion-reorder-group>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md" class="app-ph-16">
+    <ion-button slot="end" color="dark" (click)="save()">
+      <ion-icon slot="start" name="home"></ion-icon>
+      Save & Exit
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,110 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-row class="ion-align-items-center ion-justify-content-center">
+        <ion-avatar class="user-avatar-40">
+          <img [src]="chatUser.avatar ? chatUser.avatar : variableService.noAvatar" alt=""/>
+        </ion-avatar>
+        <span class="app-ml-8">Chat with {{chatUser.username}}</span>
+      </ion-row>
+    </ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div id="chat-container">
+    <ion-row class="ion-margin-top ion-no-padding" *ngFor="let conv of conversations; let i = index;">
+      <ion-col class="ion-no-padding chat-row" [ngClass]="{ 'reverse': conv.user.uid === user.uid}">
+        <div class="avatar-parent">
+          <div class="avatar-border"></div>
+          <img class="avatar" [src]="conv.user.avatar ? conv.user.avatar : variableService.noAvatar" alt=""/>
+        </div>
+        <div
+          [ngClass]="{ 'name-row-parent-right': conv.user.uid === user.uid,'name-row-parent-left': conv.user.uid !== user.uid}">
+          <div class="no-padding"
+               [ngClass]="{ 'name-row-right': conv.user.uid === user.uid,'name-row-left': conv.user.uid !== user.uid}">
+            {{conv.user.username}}
+            <div [ngClass]="{ 'timer-right': conv.user.uid === user.uid,'timer-left': conv.user.uid !== user.uid}">
+              {{i + 5}}mins ago
+              <ion-icon name="checkmark" class="first-tick" *ngIf="conv.sender && conv.sent"
+                        [color]="conv.read ? 'primary': 'light'"></ion-icon>
+              <ion-icon name="checkmark" class="second-tick" *ngIf="conv.sender && conv.delivered"
+                        [color]="conv.read ? 'primary': 'light'"></ion-icon>
+            </div>
+            <div
+              [ngClass]="{ 'reverse-arc-right': conv.user.uid === user.uid,'reverse-arc-left': conv.user.uid !== user.uid}">
+              <div
+                [ngClass]="{ 'reverse-arc-color-right': conv.user.uid === user.uid,'reverse-arc-color-left': conv.user.uid !== user.uid}"></div>
+            </div>
+          </div>
+          <div class="no-padding"
+               [ngClass]="{ 'message-row-right': conv.user.uid === user.uid,'message-row-left': conv.user.uid !== user.uid}">
+            <ion-img class="ion-no-margin conv-image" *ngIf="conv.image" [src]="conv.image"
+                     (click)="openShowImage(conv.image)"></ion-img>
+            <video controls class="conv-video" *ngIf="conv.video">
+              <source [src]="conv.video" type="video/mp4">
+            </video>
+            <div class="conv-map" *ngIf="conv.map">
+              <agm-map [draggable]="false" (click)="openLocationDialog(conv.map)"
+                       [latitude]="conv.map?.position?.lat" [longitude]="conv.map?.position?.lng">
+                <agm-marker [latitude]="conv.map?.position?.lat" [longitude]="conv.map?.position?.lng"
+                            [iconUrl]="{url: conv.map.icon, scaledSize: {width: 30, height: 30}}"></agm-marker>
+              </agm-map>
+            </div>
+            <ion-text class="ion-no-margin app-mt-8 conv-text" *ngIf="conv.map">
+              {{conv.map.description}}
+            </ion-text>
+            <ion-text class="ion-no-margin conv-text">{{conv.text}}</ion-text>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" edge slot="fixed">
+    <ion-fab-button (click)=" sendMsg()" (mousedown)="something($event)">
+      <ion-icon name="send"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab vertical="bottom" horizontal="start" edge slot="fixed" class="fabCamera">
+    <ion-fab-button class="fabCamera_button">
+      <ion-icon name="link" mode="ios" color="medium"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="sendImage()">
+        <ion-icon name="camera" color="light"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="sendVideo()" *ngIf="false">
+        <ion-icon name="Videocam" color="light"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="sendLocation()">
+        <ion-icon name="location-sharp" color="light"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+
+  <input hidden type="file" id="imageMessage" accept="image/*" (change)="imageChangeEvent($event)">
+  <input hidden type="file" id="videoMessage" accept="video/mp4" (change)="videoChangeEvent($event)">
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md">
+    <ion-item lines="none">
+      <ion-input type="text" placeholder="Write a message..." class="input-box" [(ngModel)]="editorMsg"
+                 (keypress)="userTyping()">
+      </ion-input>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>

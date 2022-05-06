@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Address</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="address-modal-container">
+    <mat-form-field class="app-w-100">
+      <input matInput type="text" placeholder="Enter your address" [(ngModel)]="locationAddress" #addressText1>
+      <button mat-icon-button matSuffix aria-label="Clear" *ngIf="locationAddress" (click)="locationAddress=''">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-radio-group class="address-modal-radio-group" (change)="locationRadioChange($event)">
+      <mat-radio-button value="private" checked>Private Location</mat-radio-button>
+      <mat-radio-button value="public">Public Location</mat-radio-button>
+    </mat-radio-group>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="end">
+      <button mat-button color="primary" (click)="addOnlyOne()">Save</button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

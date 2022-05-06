@@ -1,0 +1,394 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">My Items</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/crud-new">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="app-h-100 ion-no-padding">
+    <ion-row class="app-h-100">
+
+      <ion-col size-md="6" size-sm="12" size="12" [ngClass]="desktopPlatform ? 'app-h-100-scroll' : ''">
+        <ion-list lines="none">
+
+          <ion-list-header *ngIf="approvedCruds.length > 0">
+            <h1 class="app-no-margin">Approved</h1>
+          </ion-list-header>
+
+          <ion-item class="crud-list-item" *ngFor="let crud of approvedCruds">
+            <ion-grid class="app-w-100 ion-no-padding">
+              <ion-row class="app-w-100 app-pv-8 app-custom-scrollbar crud-cards">
+                <div class="crud-origin-card">
+                  <mat-card [ngStyle]="crudBackgroundStyle(crud)"
+                            [ngClass]="!crud.view_mode ? 'crud-preview' : (crud.view_mode.light? 'crud-preview-light' : (crud.view_mode.medium?  'crud-preview-medium' : 'crud-preview-dark'))">
+                    <ion-grid class="app-w-100 app-h-100 ion-no-padding">
+                      <ion-row class="app-h-100">
+                        <ion-col size="5" class="app-h-100">
+                          <ion-avatar class="crud-preview-avatar" *ngIf="crud.visibility?.user === true">
+                            <img [src]="crud.user.avatar ? crud.user.avatar: variableService.noAvatar" alt=""/>
+                          </ion-avatar>
+                          <div class="app-pt-8 crud-preview-username" *ngIf="crud.visibility?.user === true">
+                            <ion-label color="light">{{crud.user?.username}}</ion-label>
+                          </div>
+                          <app-rating-bar max="5" readOnly="true" class="crud-preview-rating"
+                                          *ngIf="crud.visibility?.rating == true"></app-rating-bar>
+                        </ion-col>
+                        <ion-col size="7" class="app-h-100">
+                          <ion-grid class="app-h-100 ion-no-padding app-overflow-hidden">
+                            <ion-row class="crud-preview-categories">
+                              <ng-container *ngIf="crud.visibility?.category === true">
+                                <ion-button size="small" color="light" class="app-mr-8"
+                                            *ngFor="let category of crud.categories">{{category}}</ion-button>
+                              </ng-container>
+                            </ion-row>
+                            <ion-row class="crud-preview-price">
+                              <ion-label color="light" *ngIf="crud.visibility?.price === true">
+                                {{displayPrice(crud)}}
+                              </ion-label>
+                            </ion-row>
+                            <ion-row class="crud-preview-title" *ngIf="crud.visibility?.title === true">
+                              <ion-label color="light" class="app-w-100 ion-text-center ion-text-wrap">
+                                {{crud?.title}}
+                              </ion-label>
+                            </ion-row>
+                            <ion-row class="app-mt-8 crud-preview-description"
+                                     *ngIf="crud.visibility?.description === true">
+                              <ion-label color="light" class="app-w-100 ion-text-wrap">{{crud?.description}}</ion-label>
+                            </ion-row>
+                          </ion-grid>
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                  </mat-card>
+
+                  <ion-button size="small" color="light" class="crud-preview-demo" *ngIf="crud.isDemo">DEMO</ion-button>
+
+                  <ion-toolbar mode="md" color="light">
+                    <ion-buttons slot="start">
+                      <ion-button color="success" fill="solid" (click)="share(crud)">SHARE</ion-button>
+                      <ion-button color="light" fill="solid" (click)="preview(crud)">PREVIEW</ion-button>
+                    </ion-buttons>
+
+                    <ion-buttons slot="end">
+                      <ion-button color="light" fill="solid" (click)="ratingAlert()">RATING</ion-button>
+                      <ion-button color="primary" fill="solid" (click)="editCRUD(crud)">EDIT</ion-button>
+                    </ion-buttons>
+                  </ion-toolbar>
+                </div>
+
+                <ion-card class="ion-no-margin ion-margin-start mat-elevation-z4 no-connections"
+                          *ngIf="!crud.book_list">
+                  <ion-grid class="app-flex-center">
+                    <ion-label>No connections yet</ion-label>
+                  </ion-grid>
+                </ion-card>
+
+                <ion-card class="ion-no-margin ion-margin-start mat-elevation-z4 crud-book-card"
+                          *ngFor="let book of crud.book_list; let i = index">
+                  <ion-grid class="ion-no-padding">
+                    <ion-row>
+                      <ion-item lines="none" class="app-w-100">
+                        <ion-avatar slot="start">
+                          <img
+                            [src]="getRenterUser(book)?.avatar ? getRenterUser(book)?.avatar : variableService.noAvatar"
+                            alt=""/>
+                        </ion-avatar>
+                        <ion-label class="ion-no-margin">
+                          <h3 class="app-no-margin">{{getRenterUser(book)?.username}}</h3>
+                          <h4 class="app-no-margin">{{getRenterUser(book)?.address?.city}}</h4>
+                        </ion-label>
+                        <ion-icon slot="end" name="apps-outline" (click)="openContactSettings(crud, i)"></ion-icon>
+                      </ion-item>
+                    </ion-row>
+
+                    <ion-row class="ion-align-items-center ion-justify-content-between">
+                      <ion-label color="dark" class="ion-margin-start">Is interested in your:</ion-label>
+                      <ion-item lines="none" class="book-user">
+                        <ion-avatar slot="start">
+                          <img [src]="crud?.main_background" alt=""/>
+                        </ion-avatar>
+                        <ion-label class="ion-margin-start">{{crud.title}}</ion-label>
+                      </ion-item>
+                    </ion-row>
+
+                    <ion-row class="ion-padding-horizontal">
+                      <ion-text>{{crud?.contact_message_list[i]}}</ion-text>
+                    </ion-row>
+
+                    <ion-row class="ion-padding-horizontal app-pv-8">
+                      <ion-col size="12">
+                        <ion-button class="app-w-100" [href]="'tel:' + crud?.contact_settings_list[i].phoneNumber"
+                                    [disabled]="!crud?.contact_settings_list[i].phoneNumberState">
+                          <ion-icon slot="start" name="call"></ion-icon>
+                          {{crud?.contact_settings_list[i].phoneNumber ? crud?.contact_settings_list[i].phoneNumber : 'CALL'}}
+                        </ion-button>
+                      </ion-col>
+                      <ion-col size="12">
+                        <ion-button class="app-w-100" [href]="'mailto:' + crud?.contact_settings_list[i].email"
+                                    [disabled]="!crud?.contact_settings_list[i].emailState">
+                          <ion-icon slot="start" name="mail"></ion-icon>
+                          {{crud?.contact_settings_list[i].email ? crud?.contact_settings_list[i].email : 'Email'}}
+                        </ion-button>
+                      </ion-col>
+                      <ion-col size="12">
+                        <ion-button class="app-w-100" (click)="chat(getRenterUser(book))"
+                                    [disabled]="!crud?.contact_settings_list[i].chatState">
+                          <ion-icon slot="start" name="chatbox"></ion-icon>
+                          <div>CHAT</div>
+                        </ion-button>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-card>
+              </ion-row>
+            </ion-grid>
+          </ion-item>
+
+          <ion-list-header *ngIf="pendingCruds.length > 0">
+            <h1 class="app-no-margin">Pending</h1>
+          </ion-list-header>
+
+          <ion-item class="crud-list-item" *ngFor="let crud of pendingCruds">
+            <ion-grid class="app-w-100 ion-no-padding">
+              <ion-row class="app-w-100 app-pv-8 app-custom-scrollbar crud-cards">
+                <div class="crud-origin-card">
+                  <mat-card [ngStyle]="crudBackgroundStyle(crud)"
+                            [ngClass]="!crud.view_mode ? 'crud-preview' : (crud.view_mode.light? 'crud-preview-light' : (crud.view_mode.medium?  'crud-preview-medium' : 'crud-preview-dark'))">
+                    <ion-grid class="app-w-100 app-h-100 ion-no-padding">
+                      <ion-row class="app-h-100">
+                        <ion-col size="5" class="app-h-100">
+                          <ion-avatar class="crud-preview-avatar" *ngIf="crud.visibility?.user === true">
+                            <img [src]="crud.user.avatar ? crud.user.avatar: variableService.noAvatar"
+                                 alt=""/>
+                          </ion-avatar>
+                          <div class="app-pt-8 crud-preview-username" *ngIf="crud.visibility?.user === true">
+                            <ion-label color="light">{{crud.user?.username}}</ion-label>
+                          </div>
+                          <app-rating-bar max="5" readOnly="true" class="crud-preview-rating"
+                                          *ngIf="crud.visibility?.rating == true"></app-rating-bar>
+                        </ion-col>
+                        <ion-col size="7" class="app-h-100">
+                          <ion-grid class="app-h-100 ion-no-padding app-overflow-hidden">
+                            <ion-row class="crud-preview-categories">
+                              <ng-container *ngIf="crud.visibility?.category === true">
+                                <ion-button size="small" color="light" class="app-mr-8"
+                                            *ngFor="let category of crud.categories">{{category}}</ion-button>
+                              </ng-container>
+                            </ion-row>
+                            <ion-row class="crud-preview-price">
+                              <ion-label color="light" *ngIf="crud.visibility?.price === true">
+                                {{displayPrice(crud)}}
+                              </ion-label>
+                            </ion-row>
+                            <ion-row class="crud-preview-title" *ngIf="crud.visibility?.title === true">
+                              <ion-label color="light" class="app-w-100 ion-text-center ion-text-wrap">
+                                {{crud?.title}}
+                              </ion-label>
+                            </ion-row>
+                            <ion-row class="app-mt-8 crud-preview-description"
+                                     *ngIf="crud.visibility?.description === true">
+                              <ion-label color="light" class="app-w-100 ion-text-wrap">
+                                {{crud?.description}}</ion-label>
+                            </ion-row>
+                          </ion-grid>
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                  </mat-card>
+
+                  <ion-button size="small" color="light" class="crud-preview-demo" *ngIf="crud.isDemo">DEMO</ion-button>
+
+                  <ion-toolbar mode="md" color="light">
+                    <ion-buttons slot="start">
+                      <ion-button color="success" fill="solid" (click)="share(crud)">SHARE</ion-button>
+                      <ion-button color="light" fill="solid" (click)="preview(crud)">PREVIEW</ion-button>
+                    </ion-buttons>
+
+                    <ion-buttons slot="end">
+                      <ion-button color="light" fill="solid" (click)="ratingAlert()">RATING</ion-button>
+                      <ion-button color="primary" fill="solid" (click)="editCRUD(crud)">EDIT</ion-button>
+                    </ion-buttons>
+                  </ion-toolbar>
+                </div>
+
+                <ion-card class="ion-no-margin ion-margin-start mat-elevation-z4 no-connections"
+                          *ngIf="!crud.book_list">
+                  <ion-grid class="app-flex-center">
+                    <ion-label>No connections yet</ion-label>
+                  </ion-grid>
+                </ion-card>
+
+                <ion-card class="ion-no-margin ion-margin-start mat-elevation-z4 crud-book-card"
+                          *ngFor="let book of crud.book_list; let i = index">
+                  <ion-grid class="ion-no-padding">
+                    <ion-row>
+                      <ion-item lines="none" class="app-w-100">
+                        <ion-avatar slot="start">
+                          <img
+                            [src]="getRenterUser(book)?.avatar ? getRenterUser(book)?.avatar : variableService.noAvatar"
+                            alt=""/>
+                        </ion-avatar>
+                        <ion-label class="ion-no-margin">
+                          <h3 class="app-no-margin">{{getRenterUser(book)?.username}}</h3>
+                          <h4 class="app-no-margin">{{getRenterUser(book)?.address?.city}}</h4>
+                        </ion-label>
+                        <ion-icon slot="end" name="apps-outline" (click)="openContactSettings(crud, i)"></ion-icon>
+                      </ion-item>
+                    </ion-row>
+
+                    <ion-row class="ion-align-items-center ion-justify-content-between">
+                      <ion-label color="dark" class="ion-margin-start">Is interested in your:</ion-label>
+                      <ion-item lines="none" class="book-user">
+                        <ion-avatar slot="start">
+                          <img [src]="crud?.main_background" alt=""/>
+                        </ion-avatar>
+                        <ion-label class="ion-margin-start">{{crud.title}}</ion-label>
+                      </ion-item>
+                    </ion-row>
+
+                    <ion-row class="ion-padding-horizontal">
+                      <ion-text>{{crud?.contact_message_list[i]}}</ion-text>
+                    </ion-row>
+
+                    <ion-row class="ion-padding-horizontal app-pv-8">
+                      <ion-col size="12">
+                        <ion-button class="app-w-100" [href]="'tel:' + crud?.contact_settings_list[i].phoneNumber"
+                                    [disabled]="!crud?.contact_settings_list[i].phoneNumberState">
+                          <ion-icon slot="start" name="call"></ion-icon>
+                          {{crud?.contact_settings_list[i].phoneNumber ? crud?.contact_settings_list[i].phoneNumber : 'CALL'}}
+                        </ion-button>
+                      </ion-col>
+                      <ion-col size="12">
+                        <ion-button class="app-w-100" [href]="'mailto:' + crud?.contact_settings_list[i].email"
+                                    [disabled]="!crud?.contact_settings_list[i].emailState">
+                          <ion-icon slot="start" name="mail"></ion-icon>
+                          {{crud?.contact_settings_list[i].email ? crud?.contact_settings_list[i].email : 'Email'}}
+                        </ion-button>
+                      </ion-col>
+                      <ion-col size="12">
+                        <ion-button class="app-w-100" (click)="chat(getRenterUser(book))"
+                                    [disabled]="!crud?.contact_settings_list[i].chatState">
+                          <ion-icon slot="start" name="chatbox"></ion-icon>
+                          <div>CHAT</div>
+                        </ion-button>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-card>
+              </ion-row>
+            </ion-grid>
+          </ion-item>
+
+          <ion-item>
+            <ion-card class="app-flex-center create-new" (click)="createNew()">
+              <ion-row class="ion-align-items-center">
+                <ion-label>Create</ion-label>
+                <ion-icon name="add-outline"></ion-icon>
+              </ion-row>
+            </ion-card>
+          </ion-item>
+
+        </ion-list>
+      </ion-col>
+
+      <ion-col class="right-side" size-md="6" size-sm="12" size="12"
+               [ngClass]="desktopPlatform ? 'app-h-100-scroll' : ''">
+
+        <ion-list>
+          <ion-list-header lines="inset">
+            <ion-label><h1>Unlisted Items</h1></ion-label>
+          </ion-list-header>
+
+          <ion-item-sliding *ngFor="let crud of unListCruds">
+            <ion-item>
+              <ion-thumbnail slot="start">
+                <img [src]="crud?.main_background" alt=""/>
+              </ion-thumbnail>
+              <ion-label>{{crud?.title}}</ion-label>
+            </ion-item>
+
+            <ion-item-options side="end">
+              <ion-item-option (click)="reActivate(crud)">Re Submit</ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+
+
+          <p class="app-m-16" *ngIf="unListCruds.length > 0">* Swipe left to Re Activate</p>
+        </ion-list>
+
+        <ion-toolbar mode="md" color="dark" class="crud-list-tabs ion-hide-sm-down">
+          <ion-tabs>
+            <ion-tab-bar color="dark" slot="bottom">
+              <ion-tab-button routerLink="/dashboard" routerDirection="root">
+                <ion-icon name="search"></ion-icon>
+                <ion-label>Search</ion-label>
+              </ion-tab-button>
+
+              <ion-tab-button>
+                <ion-icon name="share-social"></ion-icon>
+                <ion-label>My Items</ion-label>
+              </ion-tab-button>
+
+              <ion-tab-button routerLink="/crud-new" routerDirection="forward">
+                <ion-icon name="share"></ion-icon>
+                <ion-label>Build</ion-label>
+              </ion-tab-button>
+
+              <ion-tab-button routerLink="/connections" routerDirection="forward">
+                <ion-icon name="people-circle"></ion-icon>
+                <ion-label>Connect</ion-label>
+              </ion-tab-button>
+
+              <ion-tab-button routerLink="/profile" routerDirection="forward">
+                <ion-icon name="person-circle"></ion-icon>
+                <ion-label>Profile</ion-label>
+              </ion-tab-button>
+            </ion-tab-bar>
+          </ion-tabs>
+        </ion-toolbar>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer class="ion-hide-sm-up">
+  <ion-toolbar mode="md" color="dark">
+    <ion-tabs>
+      <ion-tab-bar color="dark" slot="bottom">
+        <ion-tab-button routerLink="/dashboard" routerDirection="root">
+          <ion-icon name="search"></ion-icon>
+          <ion-label>Search</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button>
+          <ion-icon name="share-social"></ion-icon>
+          <ion-label>My Items</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button routerLink="/crud-new" routerDirection="forward">
+          <ion-icon name="share"></ion-icon>
+          <ion-label>Build</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button routerLink="/connections" routerDirection="forward">
+          <ion-icon name="people-circle"></ion-icon>
+          <ion-label>Connect</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button routerLink="/profile" routerDirection="forward">
+          <ion-icon name="person-circle"></ion-icon>
+          <ion-label>Profile</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </ion-toolbar>
+</ion-footer>

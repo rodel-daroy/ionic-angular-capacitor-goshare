@@ -1,0 +1,63 @@
+<ion-header>
+    <ion-toolbar mode="md" color="primary">
+        <ion-buttons slot="start" class="app-w48">
+            <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center">{{crud?.title}}</ion-title>
+        <ion-buttons slot="end" class="app-w48">
+            <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid class="ion-padding">
+        <ion-row>
+            <ion-label class="app-w-100">{{crud.user?.username}}</ion-label>
+            <ion-textarea class="app-w-100 ion-margin-vertical" rows="5" [(ngModel)]="contactMessage"></ion-textarea>
+        </ion-row>
+
+        <ion-row>
+            <ion-label class="app-w-100">Choose your contact preference</ion-label>
+            <form class="app-w-100 ion-margin-top" [formGroup]="contactSettingsForm">
+                <section class="ion-padding-bottom">
+                    <mat-slide-toggle [formControlName]="'phoneNumberState'" (change)="changePhoneNumber($event)">
+                        Phone Number
+                    </mat-slide-toggle>
+                </section>
+                <mat-form-field appearance="outline" class="app-w-100">
+                    <mat-label>Phone Number</mat-label>
+                    <mat-icon matSuffix>event_available</mat-icon>
+                    <input matInput placeholder="1 801-718-3984" [formControlName]="'phoneNumber'">
+                </mat-form-field>
+
+                <section class="ion-padding-bottom">
+                    <mat-slide-toggle [formControlName]="'emailState'" (change)="changeEmail($event)">
+                        Email
+                    </mat-slide-toggle>
+                </section>
+                <mat-form-field appearance="outline" class="app-w-100">
+                    <mat-label>Email</mat-label>
+                    <mat-icon matSuffix>event_available</mat-icon>
+                    <input matInput placeholder="maxknox007@gmail.com" [formControlName]="'email'">
+                </mat-form-field>
+
+                <section>
+                    <mat-slide-toggle [formControlName]="'chatState'">Chat</mat-slide-toggle>
+                </section>
+            </form>
+        </ion-row>
+    </ion-grid>
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar mode="md" class="app-p-r-16">
+        <ion-buttons slot="end">
+            <ion-button size="small" color="primary" shape="block" fill="solid" (click)="send()">Send</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

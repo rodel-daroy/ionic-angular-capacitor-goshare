@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">FLAG THIS</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-margin ion-padding">
+    <ion-row>
+      <ion-label class="app-w-100">Reason for Flagging this item:</ion-label>
+      <ion-textarea class="app-w-100 ion-margin-vertical" rows="5" [(ngModel)]="reason"></ion-textarea>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md" class="app-ph-16">
+    <ion-buttons slot="start">
+      <ion-button size="small" color="primary" shape="block" fill="solid" (click)="modalController.dismiss()">
+        Cancel
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button size="small" color="primary" shape="block" fill="solid" (click)="submit()">Submit</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

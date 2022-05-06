@@ -1,0 +1,244 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/" *ngIf="!mobilePlatform || (mobilePlatform && !selectedUser)">
+      </ion-back-button>
+      <ion-button class="ion-hide-sm-up" (click)="closeWindow()" *ngIf="mobilePlatform && selectedUser">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <div class="chat-seg">
+      <ion-segment mode="ios" class="ion-text-center" [(ngModel)]="currentSegment" (ionChange)="segmentChanged()">
+        <ion-segment-button value="allChats">
+          <ion-label>ALL CHATS</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="host">
+          <ion-label>INCOMING</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="renter">
+          <ion-label>OUTGOING</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button (click)="openArchiveList()">
+        <ion-icon slot="icon-only" name="people"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="app-w-100 app-h-100 connections-container">
+    <ion-row class="app-h-100">
+      <ion-col size-sm="12" size-md="4" size-lg="4" size="12" class="app-h-100-scroll"
+               *ngIf="(mobilePlatform && !selectedUser) || !mobilePlatform">
+        <div class="connection-users">
+          <ion-card class="ion-padding app-flex-center"
+                    *ngIf="(pendingConnectionUsers.length + approvedConnectionUsers.length) === 0">
+            <ion-label>Nothing to see here, go make some connections</ion-label>
+          </ion-card>
+
+          <ion-list lines="none" class="chat-list-container" *ngIf="pendingConnectionUsers.length > 0">
+            <ion-list-header>
+              <h1>Pending List</h1>
+            </ion-list-header>
+
+            <ion-item lines="none" class="chat-list" *ngFor="let user of pendingConnectionUsers; let i = index"
+                      [ngClass]="pendingActiveIndex === i ? 'active-border' : ''"
+                      (click)="selectUser(user, i,'pending')">
+              <ion-thumbnail slot="start" class="app-width-84 app-height-84">
+                <img [src]="user.avatar ? user.avatar : variableService.noAvatar" alt=""/>
+              </ion-thumbnail>
+              <ion-label class="ion-no-padding">
+                <h2 class="app-no-margin">{{user.username}}</h2>
+                <h3 class="app-no-margin">{{user.lastMessage}}</h3>
+                <p> {{dateFormat(user.updatedAt)}}</p>
+              </ion-label>
+              <ion-buttons slot="end">
+                <ion-button color="dark" (click)="openContactSettings()">
+                  <ng-container *ngIf="contactInfo">
+                    <ion-icon slot="icon-only" name="cog"
+                              *ngIf="contactInfo.email !== '' && contactInfo.phoneNumber === ''"></ion-icon>
+                    <ion-icon slot="icon-only" name="cog"
+                              *ngIf="contactInfo.email === '' && contactInfo.phoneNumber !== ''"></ion-icon>
+                    <ion-icon slot="icon-only" name="cog"
+                              *ngIf="(contactInfo.email !== '' && contactInfo.phoneNumber !== '') || (contactInfo.email === '' && selectedUser.phoneNumber === '')"></ion-icon>
+                  </ng-container>
+                  <ion-icon slot="icon-only" name="cog" *ngIf="!contactInfo"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-list>
+
+          <ion-list class="chat-list-container" *ngIf="approvedConnectionUsers.length > 0">
+            <ion-list-header>
+              <h1>My Conversations</h1>
+            </ion-list-header>
+
+            <ion-item lines="none" class="chat-list" *ngFor="let user of approvedConnectionUsers; let i = index"
+                      [ngClass]="approvedActiveIndex === i ? 'active-border' : ''"
+                      (click)="selectUser(user, i, 'approved')">
+              <ion-thumbnail slot="start" class="app-width-84 app-height-84">
+                <img [src]="user.avatar ? user.avatar : variableService.noAvatar" alt=""/>
+              </ion-thumbnail>
+              <ion-label class="ion-no-padding">
+                <h2 class="app-no-margin">{{user.username}}</h2>
+                <h3 class="app-no-margin">{{user.lastMessage}}</h3>
+                <p> {{dateFormat(user.updatedAt)}}</p>
+              </ion-label>
+              <ion-buttons slot="end">
+                <ion-button color="dark" (click)="openContactSettings()">
+                  <ng-container *ngIf="contactInfo">
+                    <ion-icon slot="icon-only" name="cog"
+                              *ngIf="contactInfo.email !== '' && contactInfo.phoneNumber === ''"></ion-icon>
+                    <ion-icon slot="icon-only" name="cog"
+                              *ngIf="contactInfo.email === '' && contactInfo.phoneNumber !== ''"></ion-icon>
+                    <ion-icon slot="icon-only" name="cog"
+                              *ngIf="(contactInfo.email !== '' && contactInfo.phoneNumber !== '') || (contactInfo.email === '' && selectedUser.phoneNumber === '')"></ion-icon>
+                  </ng-container>
+                  <ion-icon slot="icon-only" name="cog" *ngIf="!contactInfo"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-col>
+
+      <ion-col size-sm="12" size-md="8" size-lg="8" size="12" class="app-h-100-scroll"
+               *ngIf="(mobilePlatform && selectedUser) || !mobilePlatform">
+        <ion-grid class="app-w-100 app-h-100 init-window" *ngIf="showingInit"></ion-grid>
+
+        <ion-grid class="app-w-100 app-h-100 selected-window" *ngIf="!showingInit">
+          <ion-row class="app-mb-8"
+                   *ngIf="hostBookList.length > 0 && currentSlideIndex === 0 && activeState === 'pending'">
+            <ion-button expand="block" color="success" (click)="approveConnection()" *ngIf="activeState === 'pending'">
+              Approve
+            </ion-button>
+            <ion-button expand="block" color="danger" (click)="denyConnection()">Deny</ion-button>
+          </ion-row>
+
+          <ion-row>
+            <ion-toolbar mode="md">
+              <mat-slide-toggle class="app-ml-8 detailtoggle" (change)="toggleDetails()">DETAILS</mat-slide-toggle>
+            </ion-toolbar>
+          </ion-row>
+
+          <ion-row *ngIf="showDetails">
+            <ion-slides pager class="app-w-100 app-mb-8" #slides (ionSlidesDidLoad)="slideLoaded()"
+                        (ionSlideDidChange)="slideChanged()">
+              <ion-slide
+                *ngIf="(currentSegment === 'allChats' || currentSegment === 'host')&& hostBookList.length > 0">
+                <div class="host-area">
+                  <ion-item lines="none" class="app-ion-item-no-padding">
+                    <ion-thumbnail slot="start">
+                      <img [src]="selectedUser.avatar ? selectedUser.avatar : variableService.noAvatar" alt=""/>
+                    </ion-thumbnail>
+                    <ion-label class="app-ml-16 app-font-20 app-font-bold">
+                      <h3 class="app-no-margin">{{selectedUser.username}}</h3>
+                      <p class="app-no-margin">Is interested in your:</p>
+                    </ion-label>
+                  </ion-item>
+                  <ion-row class="app-mt-8">
+                    <div class="connection-crud" *ngFor="let hostBook of hostBookList">
+                      <ion-card class="ion-no-margin connection-crud-card"
+                                [ngStyle]="{'background-image': 'url(' + hostBook.crud.main_background + ')'}">
+                      </ion-card>
+                      <ion-label class="connection-crud-title">{{hostBook.crud.title}}</ion-label>
+                    </div>
+                  </ion-row>
+                </div>
+              </ion-slide>
+              <ion-slide
+                *ngIf="(currentSegment === 'allChats' || currentSegment === 'renter') && rentBookList.length > 0">
+                <div class="rent-area">
+                  <ion-item lines="none" class="app-ion-item-no-padding">
+                    <ion-thumbnail slot="start">
+                      <img [src]="selectedUser.avatar ? selectedUser.avatar : variableService.noAvatar" alt=""/>
+                    </ion-thumbnail>
+                    <ion-label class="app-ml-16 app-font-20 app-font-bold">
+                      <h3 class="app-no-margin">You</h3>
+                      <p class="app-no-margin">are interested in {{selectedUser.username}}'s</p>
+                    </ion-label>
+                  </ion-item>
+                  <ion-row class="app-mt-8">
+                    <div class="connection-crud" *ngFor="let rentBook of rentBookList">
+                      <ion-card class="ion-no-margin connection-crud-card"
+                                [ngStyle]="{'background-image': 'url(' + rentBook.crud.main_background + ')'}"></ion-card>
+                      <ion-label class="connection-crud-title">{{rentBook.crud.title}}</ion-label>
+                    </div>
+                  </ion-row>
+                </div>
+              </ion-slide>
+            </ion-slides>
+          </ion-row>
+
+          <div id="chat-parent" class="chat-area">
+            <div id="chat-container">
+              <ion-row class="app-mt-20" *ngFor="let conv of messages; let i = index;"
+                       (click)="deleteMessage(conv, i)">
+                <ion-col class="ion-no-padding"
+                         [ngClass]="{'receiver-message-container': conv.user.uid !== cacheService.user.uid, 'sender-message-container': conv.user.uid === cacheService.user.uid}">
+                  <ion-avatar
+                    [ngClass]="{'landscape-avatar': platform.isLandscape(), 'portrait-avatar': platform.isPortrait()}">
+                    <img [src]="conv.user.avatar ? conv.user.avatar : variableService.noAvatar" alt=""/>
+                  </ion-avatar>
+                  <ion-grid class="ion-no-padding"
+                            [ngClass]="{'receiver-message-content': conv.user.uid !== cacheService.user.uid, 'sender-message-content': conv.user.uid === cacheService.user.uid}">
+                    <ion-row *ngIf="conv.text"
+                             [ngClass]="{'ion-justify-content-end': conv.user.uid === cacheService.user.uid}">
+                      <ion-text>{{conv.text}}</ion-text>
+                    </ion-row>
+                    <ion-row *ngIf="conv.image"
+                             [ngClass]="{'ion-justify-content-end': conv.user.uid === cacheService.user.uid}">
+                      <ion-img [src]="conv.image" (click)="openShowImage(conv.image)"
+                               [ngClass]="{'landscape-image' : platform.isLandscape(), 'portrait-image': platform.isPortrait()}"></ion-img>
+                    </ion-row>
+                    <ion-row *ngIf="conv.map"
+                             [ngClass]="{'ion-justify-content-end': conv.user.uid === cacheService.user.uid}">
+                      <agm-map [latitude]="conv.map?.position?.lat" [longitude]="conv.map?.position?.lng"
+                               [ngClass]="{'landscape-image' : platform.isLandscape(), 'portrait-image': platform.isPortrait()}"
+                               [draggable]="false" (click)="openLocationDialog(conv.map)">
+                        <agm-marker [latitude]="conv.map?.position?.lat" [longitude]="conv.map?.position?.lng"
+                                    [iconUrl]="{url: conv.map.icon, scaledSize: {width: 30, height: 30}}">
+                        </agm-marker>
+                      </agm-map>
+                    </ion-row>
+                    <ion-row
+                      [ngClass]="{'ion-justify-content-end': conv.user.uid === cacheService.user.uid}">
+                      <ion-label>{{conv.user.username}}</ion-label>
+                      <ion-label class="app-mh-4">{{formatDate(conv.createdAt)}}</ion-label>
+                      <ion-icon name="checkmark-done-outline" class="app-font-20"
+                                [color]="conv.status === 'pending' ? 'medium' : 'success'"
+                                *ngIf="conv.user.uid === cacheService.user.uid">
+                      </ion-icon>
+                    </ion-row>
+                  </ion-grid>
+                </ion-col>
+              </ion-row>
+              <div class="app-mb-16"></div>
+            </div>
+          </div>
+
+          <ion-row class="app-h48 chat-input-container">
+            <ion-item lines="none" class="input-box">
+              <ion-input type="text" placeholder="Write a message..." [(ngModel)]="typingMessage"
+                         (keypress)="messageTyping()" (keydown.enter)="sendMessage()"></ion-input>
+            </ion-item>
+            <ion-button shape="round" class="ion-no-margin ion-no-padding" (click)="sendMessage()">
+              <ion-icon slot="icon-only" name="send-sharp"></ion-icon>
+            </ion-button>
+            <ion-button shape="round" class="ion-no-margin ion-no-padding" (click)="sendImage()">
+              <ion-icon slot="icon-only" name="image"></ion-icon>
+            </ion-button>
+            <ion-button shape="round" class="ion-no-margin ion-no-padding" (click)="sendLocation()">
+              <ion-icon slot="icon-only" name="location"></ion-icon>
+            </ion-button>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <input hidden multiple type="file" id="imageMessage" accept="image/*" (change)="imageChangeEvent($event)">
+</ion-content>

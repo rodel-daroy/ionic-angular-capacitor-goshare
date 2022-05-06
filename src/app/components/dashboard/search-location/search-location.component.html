@@ -1,0 +1,37 @@
+<ion-header>
+    <ion-toolbar mode="md" color="primary">
+        <ion-buttons slot="start" class="app-w48">
+            <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <h2 class="app-m-8">Enter A City to Search</h2>
+        <ion-buttons slot="end" class="app-width-48">
+            <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid class="ion-padding">
+        <ion-searchbar (ionChange)="typingLocation($event)"></ion-searchbar>
+
+        <ion-list *ngIf="googleAutocompleteItems.length > 0">
+            <ion-item tappable *ngFor="let prediction of googleAutocompleteItems"
+                      (click)="selectSearchLocation(prediction)"
+                      [ngClass]="{'bg-opacity': prediction.description === googleAutocomplete.location}">
+                <ion-label class="app-m-l-8">{{ prediction.description }}</ion-label>
+            </ion-item>
+        </ion-list>
+    </ion-grid>
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar mode="md" class="app-p-h-16">
+        <ion-buttons slot="start">
+            <ion-button color="primary" fill="outline" (click)="userMyLocation()">Use My Location</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,147 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Incoming Verifications</ion-title>
+    <ion-buttons slot="end" class="app-w48"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="app-h-100 ion-no-padding">
+    <ion-row class="app-h-100">
+      <ion-col size-md="6" size-sm="12" size="12"
+               [ngClass]="desktopPlatform ? 'app-h-100-scroll mat-elevation-z8 ion-padding' : ''">
+        <ion-list lines="none" class="ion-no-padding">
+          <ion-list-header *ngIf="pendingUsers.length > 0">
+            <h2 class="app-no-margin">Pending</h2>
+          </ion-list-header>
+          <ion-card *ngFor="let user of pendingUsers" (click)="selectUser(user)">
+            <ion-item>
+              <ion-avatar>
+                <img [src]="user.avatar ? user.avatar : variableService.noAvatar" alt=""/>
+              </ion-avatar>
+              <ion-label class="ion-margin-start">{{user?.username}}</ion-label>
+            </ion-item>
+          </ion-card>
+
+          <ion-list-header *ngIf="verifiedUsers.length > 0">
+            <h2 class="app-no-margin">Verified</h2>
+          </ion-list-header>
+          <ion-card *ngFor="let user of verifiedUsers">
+            <ion-item>
+              <ion-avatar>
+                <img [src]="user.avatar ? user.avatar : variableService.noAvatar" alt=""/>
+              </ion-avatar>
+              <ion-label class="ion-margin-start">{{user?.username}}</ion-label>
+              <ion-button slot="end" color="dark" fill="outline" (click)="deleteVerification(user)">Delete</ion-button>
+              <ion-button slot="end" color="danger" (click)="denyVerification(user)">Deny</ion-button>
+              <ion-button slot="end" color="primary" (click)="selectUser(user)" [disabled]="!user.verifyData">
+                View
+              </ion-button>
+            </ion-item>
+          </ion-card>
+
+          <ion-list-header *ngIf="deniedUsers.length > 0">
+            <h2 class="app-no-margin">Unverified</h2>
+          </ion-list-header>
+          <ion-card *ngFor="let user of deniedUsers">
+            <ion-item>
+              <ion-avatar>
+                <img [src]="user.avatar ? user.avatar : variableService.noAvatar" alt=""/>
+              </ion-avatar>
+              <ion-label class="ion-margin-start">{{user?.username}}</ion-label>
+              <ion-button slot="end" color="success" (click)="approveVerification(user)">Approve</ion-button>
+              <ion-button slot="end" color="primary" (click)="selectUser(user)" [disabled]="!user.verifyData">
+                View
+              </ion-button>
+            </ion-item>
+          </ion-card>
+
+          <ion-list-header *ngIf="deletedUsers.length > 0">
+            <h2 class="app-no-margin">Archived</h2>
+          </ion-list-header>
+          <ion-card *ngFor="let user of deletedUsers">
+            <ion-item>
+              <ion-avatar>
+                <img [src]="user.avatar ? user.avatar : variableService.noAvatar" alt=""/>
+              </ion-avatar>
+              <ion-label class="ion-margin-start">{{user?.username}}</ion-label>
+              <ion-button slot="end" color="primary" (click)="selectUser(user)" [disabled]="!user.verifyData">
+                View
+              </ion-button>
+            </ion-item>
+          </ion-card>
+        </ion-list>
+      </ion-col>
+
+      <ion-col size-md="6" size-sm="12" size="12" class="ion-padding ion-hide-sm-down"
+               [ngClass]="desktopPlatform ? 'app-h-100-scroll mat-elevation-z8' : ''">
+        <ng-container *ngIf="!selectedPendingUser">
+          <ion-card>
+            <ion-card-header>No Incoming Verifications</ion-card-header>
+          </ion-card>
+        </ng-container>
+        <ng-container *ngIf="selectedPendingUser">
+          <ion-grid class="ion-no-padding">
+            <ion-row class="ion-margin">
+              <ion-label>
+                <span class="title">Verification Type: </span>
+                <span class="description">{{selectedPendingUser.verifyData.type}}</span>
+              </ion-label>
+            </ion-row>
+
+            <ion-row class="ion-margin">
+              <ion-col size="6">
+                <ion-label>
+                  <span class="title">First Name: </span>
+                  <span class="description">{{selectedPendingUser.verifyData.firstName}}</span>
+                </ion-label>
+              </ion-col>
+              <ion-col size="6">
+                <ion-label>
+                  <span class="title">Last Name: </span>
+                  <span class="description">{{selectedPendingUser.verifyData.lastName}}</span>
+                </ion-label>
+              </ion-col>
+              <ion-col size="12">
+                <ion-label>
+                  <span class="title">Phone Number: </span>
+                  <span class="description">{{selectedPendingUser.verifyData.phoneNumber}}</span>
+                </ion-label>
+              </ion-col>
+              <ion-col size="12">
+                <ion-label>
+                  <span class="title">Address: </span>
+                  <span class="description">{{selectedPendingUser.verifyData.address}}</span>
+                </ion-label>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-img class="ion-margin mat-elevation-z2 verification-image"
+                       [src]="selectedPendingUser.verifyData.front" *ngIf="selectedPendingUser.verifyData.front !== ''">
+              </ion-img>
+              <ion-img class="ion-margin mat-elevation-z2 verification-image"
+                       [src]="selectedPendingUser.verifyData.back" *ngIf="selectedPendingUser.verifyData.back !== ''">
+              </ion-img>
+              <ion-img class="ion-margin mat-elevation-z2 verification-image"
+                       [src]="selectedPendingUser.verifyData.live" *ngIf="selectedPendingUser.verifyData.live !== ''">
+              </ion-img>
+            </ion-row>
+
+            <ion-row class="app-mt-35 ion-padding-horizontal app-justify-end">
+              <ion-button color="success" (click)="approveVerification(selectedPendingUser)">
+                Approve Verification
+              </ion-button>
+              <ion-button color="danger" (click)="denyVerification(selectedPendingUser)">
+                Deny Verification
+              </ion-button>
+            </ion-row>
+          </ion-grid>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

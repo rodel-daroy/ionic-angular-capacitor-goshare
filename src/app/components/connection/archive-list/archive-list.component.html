@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">ARCHIVE LIST</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="ion-margin app-flex-center" *ngIf="archivedUsers.length  === 0">
+    <ion-label>There are not archived users</ion-label>
+  </ion-card>
+
+  <ion-list class="ion-margin">
+    <ion-item *ngFor="let user of archivedUsers">
+      <ion-avatar>
+        <img [src]="user.avatar? user.avatar: variableService.emptyImage" alt=""/>
+      </ion-avatar>
+      <ion-label class="ion-margin-start">{{user.username}}</ion-label>
+      <ion-button slot="end" (click)="activate(user)">Activate</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

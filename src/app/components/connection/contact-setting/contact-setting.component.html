@@ -1,0 +1,90 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Contact Settings</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="app-w-100 ion-padding">
+    <ion-row>
+      <ion-col size="4">
+        <ion-button color="light" shape="block" (click)="deny()">Deny</ion-button>
+      </ion-col>
+      <ion-col size="4">
+        <ion-button color="light" shape="block" (click)="block()">Block</ion-button>
+      </ion-col>
+      <ion-col size="4">
+        <ion-button color="light" shape="block" (click)="delete()">Delete</ion-button>
+      </ion-col>
+    </ion-row>
+
+    <div class="user-pref">
+      <ion-list>
+        <ion-list-header lines="full">
+          <ion-label><h1>{{selectedUser.username}} Contact Preferences</h1></ion-label>
+        </ion-list-header>
+        <ion-item class="app-ion-item-no-padding">
+          <ion-label>Phone Number</ion-label>
+          <ion-label slot="end">
+            {{contactSettingsForm.value.phoneNumber !== '' ? contactSettingsForm.value.phoneNumber : 'Not Provided'}}
+          </ion-label>
+        </ion-item>
+        <ion-item class="app-ion-item-no-padding">
+          <ion-label>Email</ion-label>
+          <ion-label slot="end">
+            {{contactSettingsForm.value.email !== '' ? contactSettingsForm.value.email : 'Not Provided'}}
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <div class="my-pref">
+      <ion-list-header lines="full">
+        <ion-label><h1>My Contact Preferences</h1></ion-label>
+      </ion-list-header>
+      <form [formGroup]="contactSettingsForm" class="app-mt-8">
+        <section class="ion-padding-bottom">
+          <mat-slide-toggle [formControlName]="'phoneNumberState'" (change)="changePhoneNumber($event)">
+            Phone Number
+          </mat-slide-toggle>
+        </section>
+        <mat-form-field appearance="outline" class="app-w-100">
+          <mat-label>Phone Number</mat-label>
+          <input matInput placeholder="1 801-718-3984" [formControlName]="'phoneNumber'">
+        </mat-form-field>
+
+        <section class="ion-padding-bottom">
+          <mat-slide-toggle [formControlName]="'emailState'" (change)="changeEmail($event)">
+            Email
+          </mat-slide-toggle>
+        </section>
+        <mat-form-field appearance="outline" class="app-w-100">
+          <mat-label>Email</mat-label>
+          <input matInput placeholder="maxknox007@gmail.com" [formControlName]="'email'">
+        </mat-form-field>
+
+        <section>
+          <mat-slide-toggle [formControlName]="'chatState'">Chat</mat-slide-toggle>
+        </section>
+      </form>
+    </div>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md" class="app-ph-8">
+    <ion-buttons slot="end">
+      <ion-button size="small" color="primary" shape="block" fill="solid" (click)="save()">Save</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,241 @@
+:root {
+  --ion-safe-area-top: 20px;
+  --ion-safe-area-bottom: 22px;
+}
+
+h1 {
+  font-weight: lighter !important;
+}
+
+.right-side {
+  border-left: 2px solid rgb(233, 233, 233);
+}
+
+.create-new {
+  width: 100px;
+  height: 200px;
+  border: 2px dashed var(--ion-color-medium);
+}
+
+.crud-list-item {
+
+  .app-logo {
+    width: 72px;
+    height: 24px;
+    object-fit: cover;
+  }
+
+  .crud-cards {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    display: block;
+
+    .crud-origin-card {
+      display: inline-block;
+      vertical-align: top;
+      position: relative;
+
+      .crud-preview::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
+      .crud-preview-light::before {
+        content: "";
+        border: 2px solid rgba(0, 0, 0, 0.144);
+        border-radius: 14px;
+        background-color: rgba(0, 0, 0, 0.185);
+        box-shadow: inset 0 0 68px 35px rgba(0, 0, 0, 0.219);
+        -webkit-box-shadow: inset 0 0 68px 35px rgba(0, 0, 0, 0.219);
+        -moz-box-shadow: inset 0 0 68px 35px rgba(0, 0, 0, 0.219);
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
+      .crud-preview-light ion-label {
+        color: rgb(31, 31, 31) !important;
+      }
+
+      .crud-preview-medium ion-label {
+        color: rgb(255, 255, 255) !important;
+      }
+
+      .crud-preview-dark ion-label {
+        color: rgb(255, 255, 255) !important;
+      }
+
+      .crud-preview-medium::before {
+        content: "";
+        border: 2px solid rgba(0, 0, 0, 0.144);
+        border-radius: 14px;
+        background-color: rgba(0, 0, 0, 0.027);
+        box-shadow: inset 0 0 40px 18px rgba(0, 0, 0, 0.144);
+        -webkit-box-shadow: inset 0 0 40px 18px rgba(0, 0, 0, 0.144);
+        -moz-box-shadow: inset 0 0 40px 18px rgba(0, 0, 0, 0.144);
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
+      .crud-preview-dark::before {
+        content: "";
+        border: 2px solid rgba(0, 0, 0, .096);
+        border-radius: 14px;
+        background-color: rgba(0, 0, 0, 0.158);
+        box-shadow: inset 0 0 20px 9px rgba(0, 0, 0, 0.041);
+        -webkit-box-shadow: inset 0 0 20px 9px rgba(0, 0, 0, 0.041);
+        -moz-box-shadow: inset 0 0 20px 9px rgba(0, 0, 0, 0.041);
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
+      .crud-preview-light ion-label {
+        color: rgb(31, 31, 31) !important;
+      }
+
+      .crud-preview-medium ion-label {
+        color: rgb(255, 255, 255) !important;
+      }
+
+      .crud-preview-dark ion-label {
+        color: rgb(255, 255, 255) !important;
+      }
+
+      .crud-preview, .crud-preview-light, .crud-preview-medium, .crud-preview-dark {
+        width: 300px;
+        height: 200px;
+        background: linear-gradient(rgba(0, 0, 0, 0.17), rgba(0, 0, 0, 0.17)), url('https://firebasestorage.googleapis.com/v0/b/goshare360.appspot.com/o/2020%2Fgs360.jpg?alt=media&token=d9f8677e-88bf-4541-8702-274ea23875af');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center center;
+        border-radius: 14px !important;
+        padding: 20px 16px 4px;
+        overflow: hidden !important;
+        display: block;
+        -webkit-box-shadow: 0 0 6px 3px rgba(0, 0, 0, 0.14);
+        -moz-box-shadow: 0 0 6px 3px rgba(0, 0, 0, 0.14);
+        box-shadow: 0 0 6px 3px rgba(0, 0, 0, 0.14);
+
+        &-rating {
+          --rating-size: 20px;
+          position: absolute;
+          bottom: 4px;
+          left: 0;
+        }
+
+        &-categories {
+          width: 100%;
+          height: 32px;
+          overflow-x: auto;
+          overflow-y: hidden;
+          white-space: nowrap;
+          display: block;
+
+          ion-label {
+            background: var(--ion-color-light);
+            border-radius: 2px;
+            padding: 4px;
+            font-size: 12px;
+            display: inline-block;
+          }
+        }
+
+        &-categories::-webkit-scrollbar {
+          display: none;
+        }
+
+        &-price {
+          width: 100%;
+          height: 32px;
+
+          ion-label {
+            width: 100%;
+            text-align: center;
+            white-space: nowrap;
+          }
+        }
+
+        &-title {
+          width: 100%;
+
+          ion-label {
+            height: 48px;
+            font-size: 20px;
+            line-height: 1.2;
+            overflow: hidden;
+          }
+        }
+
+        &-description {
+          width: 100%;
+          font-size: 12px;
+        }
+      }
+
+      .crud-preview-demo {
+        position: absolute;
+        right: -8px;
+        bottom: 48px;
+        z-index: 99;
+      }
+    }
+
+    .no-connections {
+      display: inline-block;
+      vertical-align: top;
+
+      ion-grid {
+        width: 200px;
+        height: 200px;
+      }
+    }
+
+    .crud-book-card {
+      display: inline-block;
+      vertical-align: top;
+
+      ion-grid {
+        width: 360px;
+        height: 240px;
+      }
+
+      .book-user {
+        ion-avatar {
+          width: 36px;
+          height: 36px;
+          margin: 0;
+        }
+
+        ion-label {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  ion-label {
+    overflow: hidden;
+  }
+}
+
+.crud-list-tabs {
+  position: absolute;
+  bottom: 0;
+}

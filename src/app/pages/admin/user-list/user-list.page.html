@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">User List</ion-title>
+    <ion-buttons slot="end" class="app-w48"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="ion-padding">
+    <ion-item *ngFor="let user of users">
+      <ion-thumbnail>
+        <img [src]="user.avatar ? user.avatar : variableService.noAvatar" alt=""/>
+      </ion-thumbnail>
+      <ion-label class="ion-margin-start">{{user?.username}}</ion-label>
+      <ion-button slot="end" color="primary" expand="block" (click)="viewProfile(user)">VIEW PROFILE</ion-button>
+      <ion-button slot="end" color="danger" expand="block" fill="outline" (click)="banUser(user)"
+                  *ngIf="!user.banned || user.banned === false">
+        BAN
+      </ion-button>
+      <ion-button slot="end" color="success" expand="block" fill="outline" (click)="unBanUser(user)"
+                  *ngIf="user.banned && user.banned === true">
+        UN-BAN
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

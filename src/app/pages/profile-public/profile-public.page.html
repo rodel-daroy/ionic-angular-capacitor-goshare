@@ -1,0 +1,108 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">{{publicUser?.username}}'s Profile</ion-title>
+    <ion-buttons slot="end" class="app-w48"></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="app-h-100 ion-no-padding profile-public-container" *ngIf="publicUser">
+    <ion-row class="app-h-100">
+
+      <ion-col size-md="6" size-sm="12" size="12" class="ion-padding"
+               [ngClass]="desktopPlatform? 'app-h-100-scroll mat-elevation-z8' : ''">
+        <ion-grid class="ion-margin-bottom ion-no-padding">
+          <ion-row class="mat-elevation-z1 profile-public-cover-pic"
+                   [ngStyle]="{'background-image': publicUser.coverPic ? 'url('+ publicUser.coverPic +')' : 'url(\'../../../../assets/user/default-cover-pic.jpg\')'}">
+            <ion-img class="mat-elevation-z4 profile-public-pic"
+                     [src]="publicUser.avatar ? publicUser.avatar : variableService.noAvatar"></ion-img>
+          </ion-row>
+
+          <ion-row class="app-mv-20 app-pv-4 ion-align-items-center ion-justify-content-center">
+            <h1 class="app-no-margin">{{publicUser?.username}}</h1>
+          </ion-row>
+
+          <ion-row class="mat-elevation-z2 profile-public-membership">
+            <ion-row class="app-flex-column">
+              <ion-label class="app-font-32">{{publicUser?.membership}}</ion-label>
+              <ion-label class="ion-margin-top">{{'MEMBERSHIP'}}</ion-label>
+            </ion-row>
+
+            <ion-grid class="ion-no-padding app-flex-center app-flex-column free-trial"
+                      *ngIf="cacheService.user?.role !== 'admin' && publicUser?.membership === 'free-trial'">
+              <ion-label class="ion-text-center app-mb-8 app-font-24">{{expiredDays}}</ion-label>
+              <ion-label class="ion-text-center">{{'DAYS LEFT'}}</ion-label>
+            </ion-grid>
+
+            <ion-button color="light" fill="solid" (click)="updateMembership()"
+                        *ngIf="cacheService.user?.role === 'admin'">
+              Update Membership
+            </ion-button>
+          </ion-row>
+
+          <ion-grid class="app-mt-20 ion-padding mat-elevation-z2">
+
+            <ion-row class="ion-align-items-center ion-justify-content-between">
+              <h1 class="app-mb-8">Verification</h1>
+              <ion-button color="light" expand="black" fill="solid" (click)="updateVerification()"
+                          *ngIf="cacheService.user?.role === 'admin'">
+                Update Verification
+              </ion-button>
+            </ion-row>
+
+            <ng-container *ngIf="!publicUser.verifyStatus || publicUser.verifyStatus === 'pending'">
+              <h4>Pending</h4>
+              <h5>Pending verification process.</h5>
+
+              <mat-action-list>
+                <button mat-list-item> Close</button>
+              </mat-action-list>
+              <mat-divider class="app-mb-4"></mat-divider>
+            </ng-container>
+
+            <mat-card *ngIf="publicUser?.verifyStatus === 'unverified' || publicUser?.verifyStatus === 'denied'">
+              <mat-card-header>
+                <div mat-card-avatar class="unverified-img"></div>
+                <mat-card-title>Unverified</mat-card-title>
+                <mat-card-subtitle>GS360 was not able to verify this profile.</mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+
+            <mat-card *ngIf="publicUser?.verifyStatus === 'verified'">
+              <mat-card-header>
+                <div mat-card-avatar class="verified-img"></div>
+                <mat-card-title>Verified</mat-card-title>
+                <mat-card-subtitle>This user has been successfully verified by GS360</mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+          </ion-grid>
+
+          <ion-list lines="none" class="ion-margin-vertical ion-no-padding" *ngIf="cacheService.user">
+            <ion-item>
+              <ion-icon slot="start"></ion-icon>
+              <ion-label>Block - This User</ion-label>
+            </ion-item>
+            <ion-row>
+              <ion-col size-xs="4" size-sm="4" size-md="4" size="12" class="ion-text-center">
+                <ion-button expand="full" (click)="block()">Block User</ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-list>
+        </ion-grid>
+      </ion-col>
+
+      <ion-col size-md="6" size-sm="12" size="12" class="ion-padding"
+               [ngClass]="desktopPlatform? 'app-h-100-scroll mat-elevation-z8' : ''">
+        <ion-grid class="ion-margin-bottom ion-no-padding">
+          <ion-row>
+            <h1>{{publicUser?.username}} is sharing:</h1>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,68 @@
+<ion-header>
+    <ion-toolbar mode="md" color="primary">
+        <ion-buttons slot="start" class="app-w48">
+            <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center">Search Settings</ion-title>
+        <ion-buttons slot="end" class="app-w48">
+            <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-item color="light">
+        <ion-label>
+            <h2 class="app-no-margin ion-text-wrap">Number of items to scrape</h2>
+        </ion-label>
+        <div slot="start">
+            <input slot="start" type="tel" class="scrape-limit" [(ngModel)]="scrapeLimit"/>
+        </div>
+        <div slot="end">
+            <ion-button color="primary" (click)="update()">Update</ion-button>
+        </div>
+    </ion-item>
+
+    <ion-item color="light">
+        <p slot="end">*Turn off specific websites by tapping the toggle button</p>
+    </ion-item>
+
+    <ion-list>
+        <ion-item *ngFor="let site of allScrapeSites">
+            <div class="site-logo">
+                <img [src]="site.logo" [alt]="''"/>
+            </div>
+            <ion-label class="ion-margin-start">
+                <h2 class="app-no-margin app-text-nowrap">{{site.name}}</h2>
+                <p class="app-no-margin app-text-nowrap">{{site.category}}</p>
+            </ion-label>
+            <div slot="end">
+                <ion-button color="primary" (click)="view(site)">View</ion-button>
+            </div>
+            <ion-toggle slot="end" color="primary"
+                        [checked]="site.checked" (ionChange)="ionChange(site,$event)"></ion-toggle>
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <ion-item>
+            <ion-label>More Settings</ion-label>
+
+        </ion-item>
+    </ion-list>
+</ion-content>
+
+<ion-footer>
+    <ion-list class="ion-no-margin ion-no-padding">
+        <ion-item>
+            <ion-button slot="end" color="dark" (click)="save()">
+                <ion-icon slot="start" name="home"></ion-icon>
+                Save & Exit
+            </ion-button>
+        </ion-item>
+    </ion-list>
+</ion-footer>

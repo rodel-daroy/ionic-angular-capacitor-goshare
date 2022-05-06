@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">FLAG THIS</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="none">
+    <ion-item class="app-mt-4" *ngFor="let user of blockedUsers">
+      <img [src]="user.avatar ? user.avatar : variableService.noAvatar" alt=""/>
+      <ion-label class="app-ml-8">{{user?.username}}</ion-label>
+      <ion-button (click)="unBlock(user)">UN-BLOCK</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md" class="app-ph-16">
+    <ion-buttons slot="end">
+      <ion-button size="small" color="primary" shape="block" fill="solid" (click)="modalController.dismiss()">
+        Close
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

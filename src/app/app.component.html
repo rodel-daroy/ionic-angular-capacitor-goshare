@@ -1,0 +1,62 @@
+<ion-app>
+  <ion-split-pane contentId="main-content" when="menuService.$showMenu:false | async">
+    <ion-menu contentId="main-content" type="overlay">
+      <ion-header class="side-menu-header">
+        <ion-toolbar color="dark">
+          <ion-row class="user-details-wrapper">
+            <ion-col>
+              <div class="ion-text-center">
+                <img class="side-menu-logo" src="/assets/logo/white.svg" alt=""/>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list id="inbox-list" lines="none">
+
+          <app-side-menu-user *ngIf="cacheService.user" [currentUser]="cacheService.user"></app-side-menu-user>
+
+          <ion-menu-toggle>
+            <ion-item routerDirection="root" routerLink="/dashboard" detail="false" routerLinkActive="selected">
+              <ion-icon slot="start" [ios]="'speedometer-outline'" [md]="'speedometer-sharp'"></ion-icon>
+              <ion-label>DASHBOARD</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle>
+            <ion-item routerDirection="forward" routerLink="/crud-items" detail="false" routerLinkActive="selected">
+              <ion-icon slot="start" [ios]="'share-social-outline'" [md]="'share-social-sharp'"></ion-icon>
+              <ion-label>My Items</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle>
+            <ion-item routerDirection="forward" routerLink="/profile" detail="false" routerLinkActive="selected">
+              <ion-icon slot="start" [ios]="'person-circle-outline'" [md]="'person-circle-sharp'"></ion-icon>
+              <ion-label>PROFILE</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle>
+            <ion-item (click)="startIntro()">
+              <ion-icon slot="start" [ios]="'book-outline'" [md]="'book-sharp'"></ion-icon>
+              <ion-label>WALKTHROUGH</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+
+        <ion-list lines="none" class="sign-out">
+          <ion-menu-toggle>
+            <ion-item (click)="signOut()">
+              <ion-icon slot="start" name="log-out"></ion-icon>
+              <ion-label>Logout</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+
+      </ion-content>
+    </ion-menu>
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
+</ion-app>

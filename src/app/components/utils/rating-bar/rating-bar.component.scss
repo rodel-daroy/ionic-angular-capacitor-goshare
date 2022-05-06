@@ -1,0 +1,24 @@
+app-rating-bar {
+  --rating-background: transparent;
+  --rating-color: #ffd740;
+  --rating-size: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  ion-button.rating-icon {
+    --background: var(--rating-background);
+    --color: var(--rating-color);
+    --color-activated: var(--rating-color);
+    --box-shadow: none;
+    --padding-bottom: 0px;
+    --padding-end: 2px;
+    --padding-start: 2px;
+    --padding-top: 0px;
+
+    width: var(--rating-size);
+    margin: 0;
+    flex: 1;
+  }
+}

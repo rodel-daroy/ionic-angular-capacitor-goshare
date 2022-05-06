@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-title class="ion-text-center">By submitting you agree to the following terms</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-margin ion-padding ">
+    <ion-text>
+      GoShare360 is an app that connects users to enable an efficient and safe site for sharing items and
+      services.<br>
+      We do not control, invest in or take commissions from any sales or transactions.<br>
+      Each user is fully responsible for their sharing items and use of the posted items.<br>
+      To post any item on GoShare360 you have to agree to the following terms.<br>
+      All items posted must be owned or legally in possession of by the posting party.<br>
+      No illegal items can be posted or <br>
+      All state and federal legal age restrictions must be abided with.<br>
+      No bullying may occur on any part of the site.<br>
+      No gender, sexual preference or racial discrimination is allowed.<br>
+      You will be expected to act in good faith to come to an amicable agreement in disputes.<br>
+      No profane or disrespectful language permitted.<br>
+      Sellers are responsible for their own insurance and liability coverage.<br>
+      All income, sales and hospitality taxes are the responsibility of the seller.<br>
+      Seller is responsible for all required licenses for the item or activity posted.<br>
+      We are not responsible for any activities and transactions performed outside of our app.<br>
+      We have the right to ban any user for inappropriate use of this app.<br>
+      Ultimately, JUST DON’T BE A JERK.<br>
+    </ion-text>
+    <ion-item lines="none" class="app-ion-item-no-padding">
+      <ion-checkbox slot="start" [(ngModel)]="read"></ion-checkbox>
+      <ion-label>By submitting you agree to these terms</ion-label>
+    </ion-item>
+  </ion-grid>
+</ion-content>
+
+<ion-footer *ngIf="read">
+  <ion-toolbar mode="md">
+    <ion-buttons slot="end">
+      <ion-button size="small" color="primary" shape="block" fill="solid" (click)="modalController.dismiss()">
+        Agree
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

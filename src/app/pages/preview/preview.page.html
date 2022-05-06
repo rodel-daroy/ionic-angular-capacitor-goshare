@@ -1,0 +1,864 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">
+      <img id="step1" class="app-h36" src="/assets/logo/white.svg" alt="GoShare360 Logo">
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button mode="md" color="secondary" expand="block" (click)="reset()">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        <span class="ion-hide-sm-down">RESET</span>
+      </ion-button>
+      <ion-button mode="md" color="light" expand="block" (click)="needToLogin()">
+        <ion-icon slot="start" name="earth"></ion-icon>
+        <span class="ion-hide-sm-down">Search History</span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <div class="app-header" *ngIf="platform.isPortrait()">
+    <div class="head-location">
+      <mat-list class="flex-row">
+        <mat-list-item class="location-item" (click)="chooseLocation()">
+          <h3 matLine>{{scrapeAddress?.city}}</h3>
+          <p matLine><span>Tap to change</span></p>
+        </mat-list-item>
+        <mat-list-item class="location-item global">
+          <ion-input placeholder="Tap to search" [(ngModel)]="searchKeyword" (keyup.enter)="enterSearchKeyword()">
+          </ion-input>
+          <ion-icon name="close-outline" class="app-font-24" (click)="clearSearchKeyword()"
+                    *ngIf="searchKeyword !== ''">
+            close
+          </ion-icon>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf="platform.isLandscape()">
+    <ion-grid class="app-h-100 ion-no-padding preview-landscape">
+      <ion-row class="app-h-100">
+        <!-- Desktop Left (Map) -->
+        <ion-col size-sm="12" [sizeMd]="skipMap? 0.5 : 6" size="12" class="ion-no-padding preview-landscape-left">
+          <agm-map class="app-w-100 app-h-100" [zoom]="11" (zoomChange)="zoomChange($event)"
+                   [latitude]="variableService.scrapeLocation?.lat" [longitude]="variableService.scrapeLocation?.lng">
+            <agm-marker-cluster
+              imagePath="https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m">
+              <agm-marker *ngFor="let scrapeMarker of scrapeMarkers" [latitude]="scrapeMarker.position.lat"
+                          [longitude]="scrapeMarker.position.lng" [iconUrl]="scrapeMarker.icon"
+                          (markerClick)="scrapeDetail(scrapeMarker.data)" (mouseOver)="onMouseOver(infoWindow)"
+                          (mouseOut)="onMouseOut(infoWindow)">
+                <agm-info-window #infoWindow>
+                  Location not supplied by {{scrapeMarker.data.name}}
+                </agm-info-window>
+              </agm-marker>
+            </agm-marker-cluster>
+            <agm-circle [latitude]="variableService.scrapeLocation?.lat"
+                        [longitude]="variableService.scrapeLocation?.lng" [radius]="(variableService.radius * 1600)"
+                        [fillColor]="'red'" [circleDraggable]="false" [editable]="false"
+                        *ngIf="scrapeMarkers.length > 0 && circleShowing">
+            </agm-circle>
+          </agm-map>
+          <ion-label class="map-markerLabel" *ngIf="markerLabel !== ''">{{markerLabel}}</ion-label>
+          <ion-button color="light" class="ion-no-padding" [ngClass]="skipMap? 'skip-map-left' : 'skip-map-right'"
+                      (click)="skipDesktopMap()">
+            <ion-icon slot="icon-only" src="/assets/material/skip_previous-24px.svg" *ngIf="!skipMap"></ion-icon>
+            <ion-icon slot="icon-only" src="/assets/material/skip_next-24px.svg" *ngIf="skipMap"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <!-- Desktop Right (Dashboard)-->
+        <ion-col size-sm="12" [sizeMd]="skipMap? 11.5 : 6" size="12" class="ion-no-padding preview-landscape-right">
+          <!-- Location & Search Row -->
+          <div class="app-header">
+            <div class="head-location">
+              <mat-list class="flex-row">
+                <mat-list-item class="location-item" (click)="chooseLocation()">
+                  <img matListAvatar
+                       src="https://firebasestorage.googleapis.com/v0/b/goshare360.appspot.com/o/2020%2Ficons%2Fuser-location.svg?alt=media&token=17c076a6-951c-4a4f-96b7-33781181fd0f"
+                       alt="Current Location"/>
+                  <h3 matLine>{{scrapeAddress?.city}}</h3>
+                  <p matLine><span>Click to change</span></p>
+                </mat-list-item>
+                <mat-list-item class="location-item global">
+                  <img matListAvatar
+                       src="https://firebasestorage.googleapis.com/v0/b/goshare360.appspot.com/o/2020%2Ficons%2Fsearch2.svg?alt=media&token=037cda38-d5b3-4d0d-842e-5315e87a32d1"
+                       alt="search"/>
+                  <ion-input placeholder="Click to search" [(ngModel)]="searchKeyword"
+                             (keyup.enter)="enterSearchKeyword()">
+                  </ion-input>
+                  <ion-icon name="close-outline" class="app-font-24" (click)="clearSearchKeyword()"
+                            *ngIf="searchKeyword !== ''">
+                    close
+                  </ion-icon>
+                </mat-list-item>
+                <button class="location-button" (click)="submitWebsite()">Submit A Website</button>
+              </mat-list>
+            </div>
+          </div>
+
+          <!-- Scrape Results & Horizontal List -->
+          <ion-grid class="ion-no-padding preview-landscape-right-container">
+
+            <ion-row class="app-m-8 goShare-desktop-categories-list app-custom-scrollbar">
+              <ion-button id="step3" size="small" color="primary" (click)="openScrapingSetting()">
+                Share Directory
+              </ion-button>
+              <ion-button size="small" color="success" (click)="defaultFilterScrape()">All Nearby</ion-button>
+              <ion-button size="small" color="success" *ngFor="let scrapeCategory of categories"
+                          (click)="categoryFilterScrape(scrapeCategory)">
+                {{scrapeCategory}}
+              </ion-button>
+            </ion-row>
+
+            <ion-grid class="ion-no-padding desktop-prog"
+                      *ngIf="!variableService.scrapingState && locationPermissionState">
+              <!-- Search Results Toolbar after scraping / searching is finished -->
+              <ion-item lines="none" color="primary">
+                <ion-avatar slot="start"><img src="/assets/logo/gs360-scrape.svg" alt=""/></ion-avatar>
+                <ion-row id="step2" class="scrape-readout">
+                  <div class="section1">
+                    Search Results<br/>
+                    <ng-container *ngIf="searchKeyword !==''">for {{searchKeyword}}</ng-container>
+                    for {{scrapeAddress?.city}}
+                  </div>
+                  <div class="section2">
+                    <ion-list lines="none">
+                      <ion-list-header>
+                        {{filteredScrapedSites.length}} Sites searched.<br>
+                        {{scrapeFilterBySize0().length}} produced 0 results.
+                      </ion-list-header>
+                      <ion-item>
+                        <ion-toggle slot="start" [(ngModel)]="showingSize0"></ion-toggle>
+                        <ion-label>Zero list</ion-label>
+                      </ion-item>
+                      <ng-container *ngIf="showingSize0">
+                        <ion-item *ngFor="let website of scrapeFilterBySize0()">{{website.name}}</ion-item>
+                      </ng-container>
+                    </ion-list>
+                  </div>
+                </ion-row>
+                <ion-button slot="end" (click)="openScrapingSetting()">
+                  <ion-icon slot="icon-only" name="settings-sharp" class="app-font-24"></ion-icon>
+                </ion-button>
+              </ion-item>
+            </ion-grid>
+            <ion-grid class="ion-no-padding desktop-prog"
+                      *ngIf="variableService.scrapingState && locationPermissionState">
+              <!-- Search Results Toolbar while scraping -->
+              <ion-item lines="none" color="primary">
+                <ion-avatar slot="start"><img src="/assets/logo/gs360-scrape.svg" alt=""/></ion-avatar>
+                <ion-row class="scrape-readout">
+                  <div class="section1">
+                    Searching {{variableService.currentScrapingSite.name}}<br/>
+                    <ng-container *ngIf="searchKeyword !==''">for {{searchKeyword}}</ng-container>
+                    in {{scrapeAddress?.city}}
+                  </div>
+                  <div class="section2">
+                    <ion-list lines="none">
+                      <ion-list-header>
+                        {{filteredScrapedSites.length}} Sites searched.<br>
+                        {{scrapeFilterBySize0().length}} produced 0 results.
+                      </ion-list-header>
+                      <ion-item>
+                        <ion-toggle slot="start" [(ngModel)]="showingSize0"></ion-toggle>
+                        <ion-label>Zero list</ion-label>
+                      </ion-item>
+                      <ng-container *ngIf="showingSize0">
+                        <ion-item *ngFor="let website of scrapeFilterBySize0()">{{website.name}}</ion-item>
+                      </ng-container>
+                    </ion-list>
+                  </div>
+                </ion-row>
+                <ion-button slot="end" (click)="stopScraping()">
+                  <ion-icon slot="icon-only" name="close-outline" class="app-font-24"></ion-icon>
+                </ion-button>
+              </ion-item>
+              <ion-row>
+                <ion-progress-bar type="indeterminate"></ion-progress-bar>
+              </ion-row>
+            </ion-grid>
+            <ion-grid class="ion-no-padding app-m-8 app-p-8 scrape-desktop" *ngIf="locationPermissionState">
+              <ion-card class="scrape-desktop-walking-loader"
+                        [ngClass]="walkingLoader === 0 ? 'dashGif1' : (walkingLoader === 1 ? 'dashGif2' : 'dashGif3')"
+                        *ngIf="filteredScrapedSites.length === 0">
+              </ion-card>
+              <!-- START Desktop Horizontal Website List -->
+              <ion-grid class="container" *ngFor="let website of scrapeFilterBySize()">
+                <div class="horizontal-static app-custom-scrollbar">
+                  <!-- First Horizontal Scroll Card -->
+                  <ion-card class="c2action">
+                    <ion-card-content>
+                      <div class="scrape-header">
+                        <ion-label class="scrape-size" *ngIf="website.size > 0">{{website.size}}</ion-label>
+                        <div>
+                          <ion-card-title>{{website.name}}</ion-card-title>
+                          <ion-card-subtitle>{{website.siteURL}}</ion-card-subtitle>
+                        </div>
+                      </div>
+                      <h2 class="app-mb-0 subheading-2">{{website.description}}</h2>
+                      <ion-icon name="library-outline"></ion-icon>
+                      <h3 class="subheading-2">{{website.category}}</h3>
+                    </ion-card-content>
+                  </ion-card>
+                  <!-- All Horizontal Scrape Items for each website -->
+                  <div class="crud-horizontal-card-medium" *ngFor="let scrape of website.data"
+                       (click)="scrapeDetail(scrape)">
+                    <ion-card class="app-mr-8 crud-preview"
+                              [ngStyle]="{'background-image': 'url('+ scrapeImageSource(scrape) +')'}">
+                      <ion-grid class="app-w-100 app-h-100 ion-no-padding">
+                        <ion-row class="app-h-50">
+                          <ion-col size="5" class="app-h-100"></ion-col>
+                          <ion-col size="7" class="app-h-100 ion-no-padding">
+                            <ion-row class="app-w-100">
+                              <ion-label color="light" class="crud-price textbg">{{scrape?.price}}</ion-label>
+                            </ion-row>
+                          </ion-col>
+                        </ion-row>
+                        <ion-row class="app-h-50 ion-align-items-end ion-justify-content-center">
+                          <ion-label color="light" class="ion-text-wrap textbg">{{scrape?.description}}</ion-label>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-card>
+                    <div class="crud-title">{{scrape.title}}</div>
+                  </div>
+                  <!-- end scrape items -->
+                </div>
+              </ion-grid>
+              <!-- END Desktop Horizontal Website List -->
+            </ion-grid>
+
+            <ion-grid class="ion-no-padding desktop-prog">
+              <ion-row class="ion-no-padding">
+                <ion-list class="app-w-100 ion-no-padding">
+                  <ion-item lines="none" color="secondary">
+                    <ion-row class="ion-align-items-center">
+                      <ion-label class="goShare-desktop-horizontal-size">
+                        {{crudCategorySize}}
+                      </ion-label>
+                      <img class="app-ml-8 goShare-desktop-horizontal-logo"
+                           src="/assets/logo/original-white.svg" alt=""/>
+                      <ion-label class="app-ml-8 app-flex-center">
+                        {{crudCategory}}
+                      </ion-label>
+                    </ion-row>
+                    <ion-label></ion-label>
+                    <img class="size-mode" src="/assets/dashboard/small_white.png"
+                         (click)="changeCrudCardSize('small')"
+                         *ngIf="crudViewMode === 'Horizontal'" alt=""/>
+                    <img class="size-mode" src="/assets/dashboard/medium_white.png"
+                         (click)="changeCrudCardSize('medium')"
+                         *ngIf="crudViewMode === 'Horizontal'" alt=""/>
+                    <img class="size-mode" src="/assets/dashboard/large_white.png"
+                         (click)="changeCrudCardSize('large')"
+                         *ngIf="crudViewMode === 'Horizontal'" alt=""/>
+                    <div class="mode-divider"></div>
+                    <ion-row class="view-mode">
+                      <mat-slide-toggle (change)="crudViewModeChange($event)"></mat-slide-toggle>
+                      <ion-label class="app-font-12">{{crudViewMode}}</ion-label>
+                    </ion-row>
+                  </ion-item>
+                </ion-list>
+              </ion-row>
+            </ion-grid>
+            <ion-grid class="ion-no-padding app-m-8 app-p-8 goShare-desktop">
+              <ion-grid class="app-w-100 ion-no-padding">
+                <ng-container *ngIf="crudViewMode === 'Horizontal'">
+                  <ion-row class="app-custom-scrollbar goShare-desktop-horizontal-list">
+                    <div
+                      [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')"
+                      (click)="needToLogin()">
+                      <mat-card class="crud-horizontal-card-new">
+                        <ion-label class="ion-text-center ion-text-wrap">SHARE SOMETHING</ion-label>
+                      </mat-card>
+                    </div>
+                    <ng-container *ngIf="filteredCrud.length === 0">
+                      <div
+                        [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')"
+                        *ngIf="!locationPermissionState">
+                        <mat-card class="app-ml-16 crud-preview crud-preview-light app-w240">
+                          <ion-grid class="app-w-100 app-h-100 app-p-8">
+                            <h2> Allow Location Access </h2>
+                            <ion-label class="ion-text-wrap">
+                              You have disabled location access, Click the button below to
+                              find what is near you
+                            </ion-label>
+                            <ion-row class="app-mt-16 ion-justify-content-center">
+                              <ion-button (click)="previewRequestAccess()">
+                                Request Access
+                              </ion-button>
+                            </ion-row>
+                          </ion-grid>
+                        </mat-card>
+                      </div>
+                      <div
+                        [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')">
+                        <mat-card class="app-ml-16 app-mb-8 crud-preview crud-preview-light dashAd1"></mat-card>
+                      </div>
+                      <div
+                        [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')">
+                        <mat-card class="app-ml-16 app-mb-8 crud-preview crud-preview-medium dashAd2"></mat-card>
+                      </div>
+                      <div
+                        [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')">
+                        <mat-card class="app-ml-16 app-mb-8 crud-preview crud-preview-dark dashAd3"></mat-card>
+                      </div>
+                    </ng-container>
+                    <div
+                      [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')"
+                      *ngFor="let crud of filteredCrud" (click)="crudDetail()">
+                      <mat-card class="app-ml-16"
+                                [ngClass]="[!crud.view_mode ? 'crud-preview' : (crud.view_mode.light? 'crud-preview-light' : (crud.view_mode.medium?  'crud-preview-medium' : 'crud-preview-dark')), crud.title === focusTitle ? 'focus-card' : '']"
+                                [ngStyle]="crudBackgroundStyle(crud)">
+                        <ion-grid class="app-w-100 app-h-100 ion-no-padding" *ngIf="crudSizeOption == 'large'">
+                          <ion-row class="app-h-50">
+                            <ion-col size="5" class="app-h-100 ion-no-padding">
+                              <ion-avatar *ngIf="crud?.visibility?.user === true">
+                                <img [src]="crud.user.avatar ? crud.user.avatar : variableService.noAvatar" alt=""/>
+                              </ion-avatar>
+                              <ion-label color="light" class="crud-username textbg"
+                                         *ngIf="crud?.visibility?.user === true">
+                                {{crud.user?.username}}
+                              </ion-label>
+                            </ion-col>
+                            <ion-col size="7" class="app-h-100 ion-no-padding">
+                              <ion-row class="app-w-100">
+                                <ion-label color="light" class="crud-price textbg"
+                                           *ngIf="crud?.visibility?.price === true">
+                                  {{displayPrice(crud)}}
+                                </ion-label>
+                              </ion-row>
+                              <ion-row class="app-w-100 ion-justify-content-end">
+                                <ion-button size="small" color="light" *ngIf="crud.isDemo">
+                                  {{'DEMO'}}
+                                </ion-button>
+                              </ion-row>
+                            </ion-col>
+                          </ion-row>
+                          <ion-row class="app-h-50 ion-align-items-end ion-justify-content-center">
+                            <ion-label color="light" class="ion-text-wrap textbg"
+                                       *ngIf="crud?.visibility?.description === true">
+                              {{crud?.description}}
+                            </ion-label>
+                          </ion-row>
+                        </ion-grid>
+                      </mat-card>
+                      <ion-button size="small" color="light" class="crud-preview-demo"
+                                  *ngIf="crud.isDemo && crudSizeOption != 'large'">{{'DEMO'}}</ion-button>
+                      <div class="app-mv-8 crud-title">{{crud.title}}</div>
+                    </div>
+                  </ion-row>
+                  <ion-row class="wanted-row-desktop">
+                    <ion-col size="4">
+                      <ion-grid class="ion-align-items-center wanted">
+                        <ion-row class="ion-no-padding">
+                          <p>
+                            Can't find what you're looking for in {{scrapeAddress?.city}}?
+                          </p>
+                        </ion-row>
+                        <ion-row class="ion-no-padding">
+                          <ion-button size="small" expand="block" color="primary">
+                            SUBMIT A WANTED
+                          </ion-button>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-col>
+                    <ion-col size="8" class="ion-align-items-left app-custom-scrollbar goShare-mini-list">
+                      <span class="app-d-block">Wanted near {{scrapeAddress?.city}}:</span>
+                      <ion-card class="ion-no-margin goShare-mini-no-card"
+                                *ngIf="filteredRequests.length === 0">
+                        <ion-card-subtitle class="app-m-8">
+                          Be the first to submit a wanted ad in {{scrapeAddress?.city}}
+                        </ion-card-subtitle>
+                      </ion-card>
+                      <ion-card class="ion-no-margin goShare-mini-card"
+                                *ngFor="let request of filteredRequests"
+                                (click)="requestDetail()">
+                        <ion-row>
+                          <ion-label class="app-mr-4"
+                                     *ngFor="let category of request.categories; let i = index">{{category}}
+                            <span *ngIf="i !== request.categories.length - 1">,</span>
+                          </ion-label>
+                        </ion-row>
+                        <ion-row class="ion-justify-content-center">
+                          <ion-label>{{request.keyword}}</ion-label>
+                        </ion-row>
+                      </ion-card>
+                    </ion-col>
+                  </ion-row>
+                </ng-container>
+
+                <ng-container *ngIf="crudViewMode === 'Vertical'">
+                  <mat-grid-list cols="6" rowHeight="1:1" gutterSize="20px"
+                                 *ngFor="let oneGroup of crudGroups">
+                    <ng-container *ngFor="let crud of oneGroup">
+                      <mat-grid-tile class="mat-elevation-z2 crud-card-desktop-vertical"
+                                     [ngStyle]="crudBackgroundStyle(crud)"
+                                     [colspan]="crud.cols" [rowspan]="crud.rows"
+                                     (click)="crudDetail()" *ngIf="crud.title">
+                        <ion-grid class="app-w-100 app-h-100-scroll">
+                          <ion-avatar class="crud-card-desktop-vertical-avatar">
+                            <img [src]="crud.user.avatar ? crud.user.avatar : variableService.noAvatar"
+                                 alt=""/>
+                          </ion-avatar>
+                          <ion-row class="crud-card-desktop-vertical-title">
+                            <ion-label>{{crud.title}}</ion-label>
+                          </ion-row>
+                        </ion-grid>
+                      </mat-grid-tile>
+                    </ng-container>
+                  </mat-grid-list>
+                </ng-container>
+              </ion-grid>
+            </ion-grid>
+
+            <ion-grid class="ion-no-padding desktop-prog">
+              <ion-item lines="none" color="secondary">
+                <ion-label>Sharing Services</ion-label>
+              </ion-item>
+            </ion-grid>
+            <ion-grid class="ion-no-padding app-m-8 app-p-8 goShare-desktop">
+              <ion-grid class="container" *ngFor="let website of staticSites">
+                <div class="horizontal-static app-custom-scrollbar">
+                  <mat-card class="c2action">
+                    <mat-card-content>
+                      <div class="scrape-header">
+                        <div class="app-ml-8">
+                          <mat-card-title>{{website.name}}</mat-card-title>
+                          <mat-card-subtitle>{{website.siteURL}}</mat-card-subtitle>
+                        </div>
+                      </div>
+                      <h2 class="app-mb-0 subheading-2">{{website.description}}</h2>
+                      <ion-icon name="library-outline"></ion-icon>
+                      <h3 class="subheading-2">{{website.category}}</h3>
+                    </mat-card-content>
+                  </mat-card>
+                  <div class="crud-horizontal-card-medium" *ngFor="let card of website.cards">
+                    <mat-card class="app-mr-8 static-card" (click)="howItWorks(card, website)"
+                              [ngStyle]="{'background-color' : card['background-color'], 'background-image': 'url(' + card['background-image'] + ')', color: card.color}">
+                      <ion-grid class="app-w-100 app-h-100 app-flex-center">
+                        <ion-label class="app-font-20 app-font-bold">{{card.title}}</ion-label>
+                      </ion-grid>
+                    </mat-card>
+                  </div>
+                </div>
+              </ion-grid>
+            </ion-grid>
+          </ion-grid>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
+
+  <ng-container *ngIf="platform.isPortrait()">
+    <ng-container *ngIf="!mapShowing">
+      <ion-grid class="app-w-100 ion-no-padding app-p-8 portrait-map-invisible">
+
+        <ion-row class="app-mb-8 goShare-mobile-categories-list app-custom-scrollbar">
+          <ion-button id="step03" size="small" color="primary" (click)="openScrapingSetting()">Share Directory
+          </ion-button>
+          <ion-button size="small" color="primary" (click)="submitWebsite()">Submit a website</ion-button>
+          <ion-button size="small" color="success" (click)="defaultFilterScrape()">All Nearby</ion-button>
+          <ion-button size="small" color="success" *ngFor="let category of categories"
+                      (click)="categoryFilterScrape(category)">
+            {{category}}
+          </ion-button>
+        </ion-row>
+
+        <ion-grid class="ion-no-padding mobile-prog" *ngIf="!variableService.scrapingState && locationPermissionState">
+          <ion-row id="step02" class="app-p-4 ion-align-items-center" style="background: var(--ion-color-primary)">
+            <ion-col size="5">
+              <div class="section1">
+                Search Results<br/>
+                <ng-container *ngIf="searchKeyword !==''">for {{searchKeyword}}</ng-container>
+                in {{scrapeAddress?.city}}
+              </div>
+            </ion-col>
+            <ion-col size="0.5"></ion-col>
+            <ion-col size="5">
+              <ion-list lines="none" class="section2">
+                <ion-list-header class="ion-no-padding app-pl-8">
+                  {{filteredScrapedSites.length}} Sites searched.<br>
+                  {{scrapeFilterBySize0().length}} produced 0 results.
+                </ion-list-header>
+                <ion-item class="app-ion-item-no-padding app-pl-8">
+                  <ion-toggle slot="start" [(ngModel)]="showingSize0"></ion-toggle>
+                  <ion-label>Zero list</ion-label>
+                </ion-item>
+                <ng-container *ngIf="showingSize0">
+                  <ion-item *ngFor="let website of scrapeFilterBySize0()">{{website.name}}</ion-item>
+                </ng-container>
+              </ion-list>
+            </ion-col>
+            <ion-col size="1.5" (click)="stopScraping()">
+              <ion-icon name="close-outline" color="light" class="app-font-24"></ion-icon>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-grid class="ion-no-padding mobile-prog" *ngIf="variableService.scrapingState && locationPermissionState">
+          <ion-row class="app-p-4 ion-align-items-center" style="background: var(--ion-color-primary)">
+            <ion-col size="5">
+              <div class="section1">
+                Searching {{variableService.currentScrapingSite.name}}<br/>
+                <ng-container *ngIf="searchKeyword !==''">for {{searchKeyword}}</ng-container>
+                in {{scrapeAddress?.city}}
+              </div>
+            </ion-col>
+            <ion-col size="0.5"></ion-col>
+            <ion-col size="5">
+              <ion-list lines="none" class="section2">
+                <ion-list-header class="ion-no-padding app-pl-8">
+                  {{filteredScrapedSites.length}} Sites searched.<br>
+                  {{scrapeFilterBySize0().length}} produced 0 results.
+                </ion-list-header>
+                <ion-item class="app-ion-item-no-padding app-pl-8">
+                  <ion-toggle slot="start" [(ngModel)]="showingSize0"></ion-toggle>
+                  <ion-label>Zero list</ion-label>
+                </ion-item>
+                <ng-container *ngIf="showingSize0">
+                  <ion-item *ngFor="let website of scrapeFilterBySize0()">{{website.name}}</ion-item>
+                </ng-container>
+              </ion-list>
+            </ion-col>
+            <ion-col size="1.5" (click)="stopScraping()">
+              <ion-icon name="close-outline" color="light" class="app-font-24"></ion-icon>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-progress-bar type="indeterminate"></ion-progress-bar>
+          </ion-row>
+        </ion-grid>
+        <ion-grid class="ion-margin-top ion-no-padding app-p-4 scrape-mobile" *ngIf="locationPermissionState">
+          <ion-card class="scrape-mobile-walking-loader"
+                    [ngClass]="walkingLoader === 0 ? 'dashGif1' : (walkingLoader === 1 ? 'dashGif2' : 'dashGif3')"
+                    *ngIf="filteredScrapedSites.length === 0">
+          </ion-card>
+          <ion-grid class="container" *ngFor="let website of scrapeFilterBySize()">
+            <div class="horizontal-static app-custom-scrollbar">
+              <mat-card class="c2action">
+                <mat-card-content>
+                  <div class="scrape-header">
+                    <ion-label class="scrape-size" *ngIf="website.size > 0">{{website.size}}</ion-label>
+                    <div>
+                      <mat-card-title>{{website.name}}</mat-card-title>
+                      <mat-card-subtitle>{{website.siteURL}}</mat-card-subtitle>
+                    </div>
+                  </div>
+                  <h2 class="app-mb-0 subheading-2">{{website.description}}</h2>
+                  <ion-icon name="library-outline"></ion-icon>
+                  <h3 class="subheading-2">{{website.category}}</h3>
+                </mat-card-content>
+              </mat-card>
+              <div class="crud-horizontal-card-medium" *ngFor="let scrape of website.data"
+                   (click)="scrapeDetail(scrape)">
+                <mat-card class="app-mr-8 crud-preview"
+                          [ngStyle]="{'background-image': 'url('+ scrapeImageSource(scrape) +')'}">
+                  <ion-grid class="app-w-100 app-h-100 ion-no-padding">
+                    <ion-row class="app-h-50">
+                      <ion-col size="5" class="app-h-100"></ion-col>
+                      <ion-col size="7" class="app-h-100 ion-no-padding">
+                        <ion-row class="app-w-100">
+                          <ion-label color="light" class="crud-price textbg">{{scrape?.price}}</ion-label>
+                        </ion-row>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row class="app-h-50 ion-align-items-end ion-justify-content-center">
+                      <ion-label color="light" class="ion-text-wrap textbg">{{scrape?.description}}</ion-label>
+                    </ion-row>
+                  </ion-grid>
+                </mat-card>
+                <div class="crud-title">{{scrape.title}}</div>
+              </div>
+            </div>
+          </ion-grid>
+        </ion-grid>
+
+        <ion-grid class="mobile-prog-gs">
+          <ion-row class="ion-no-padding">
+            <ion-list class="app-w-100 ion-no-padding">
+              <ion-item lines="none" color="secondary">
+                <ion-badge color="light" slot="start">{{crudCategorySize}}</ion-badge>
+                <ion-label>GS360 Shareables near you</ion-label>
+                <ion-icon slot="end" name="ellipsis-vertical" color="light" class="app-mr-8"
+                          (click)="openSizeOptions('GoShare')"></ion-icon>
+              </ion-item>
+            </ion-list>
+          </ion-row>
+        </ion-grid>
+        <ion-grid id="step01" class="ion-no-padding app-p-4 goShare-mobile">
+          <ng-container *ngIf="crudViewMode === 'Horizontal'">
+            <ion-list lines="none" class="app-no-padding goShare-mobile-horizontal">
+              <ion-item class="app-ion-item-no-padding">
+                <ion-grid class="app-w-100 ion-no-padding">
+                  <ion-row class="app-custom-scrollbar goShare-mobile-horizontal-list">
+                    <ion-item class='app-ion-item-no-padding'
+                              [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')"
+                              *ngIf="!locationPermissionState">
+                      <mat-card class="app-m-8 crud-preview app-w240">
+                        <ion-grid class="app-w-100 app-h-100 ion-no-padding">
+                          <h2> Allow Location Access </h2>
+                          <ion-label class="ion-text-wrap">
+                            You have disabled location access, Click the button below to
+                            find what is near you
+                          </ion-label>
+                          <ion-row class="app-mt-16 ion-justify-content-center">
+                            <ion-button (click)="previewRequestAccess()">
+                              Request Access
+                            </ion-button>
+                          </ion-row>
+                        </ion-grid>
+                      </mat-card>
+                    </ion-item>
+                    <ng-container *ngIf="filteredCrud.length === 0">
+                      <ion-item class='app-ion-item-no-padding'
+                                [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')">
+                        <mat-card class="app-m-8 crud-preview dashAd1"></mat-card>
+                      </ion-item>
+                      <ion-item class='app-ion-item-no-padding'
+                                [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')">
+                        <mat-card class="app-m-8 crud-preview dashAd2"></mat-card>
+                      </ion-item>
+                      <ion-item class='app-ion-item-no-padding'
+                                [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')">
+                        <mat-card class="app-m-8 crud-preview dashAd3"></mat-card>
+                      </ion-item>
+                    </ng-container>
+                    <ion-item class='app-ion-item-no-padding'
+                              [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')"
+                              *ngFor="let crud of filteredCrud" (click)="crudDetail()">
+                      <div>
+                        <mat-card class="app-m-8" [ngStyle]="crudBackgroundStyle(crud)"
+                                  [ngClass]="!crud.view_mode ? 'crud-preview' : (crud.view_mode.light? 'crud-preview-light' : (crud.view_mode.medium?  'crud-preview-medium' : 'crud-preview-dark'))">
+                          <ion-grid class="app-w-100 app-h-100 ion-no-padding"
+                                    *ngIf="crudSizeOption == 'large'">
+                            <ion-row class="app-h-50">
+                              <ion-col size="5" class="app-h-100 ion-no-padding">
+                                <ion-avatar *ngIf="crud?.visibility?.user === true">
+                                  <img [src]="crud.user.avatar ? crud.user.avatar : variableService.noAvatar"
+                                       alt=""/>
+                                </ion-avatar>
+                                <ion-label color="light" class="crud-username textbg"
+                                           *ngIf="crud?.visibility?.user === true">
+                                  {{crud.user?.username}}
+                                </ion-label>
+                              </ion-col>
+                              <ion-col size="7" class="app-h-100 ion-no-padding">
+                                <ion-row class="app-w-100">
+                                  <ion-label color="light" class="crud-price textbg"
+                                             *ngIf="crud?.visibility?.price === true">
+                                    {{displayPrice(crud)}}
+                                  </ion-label>
+                                </ion-row>
+                                <ion-row class="app-w-100 ion-justify-content-end">
+                                  <ion-button size="small" color="light"
+                                              *ngIf="crud.isDemo">
+                                    {{'DEMO'}}
+                                  </ion-button>
+                                </ion-row>
+                              </ion-col>
+                            </ion-row>
+                            <ion-row
+                              class="app-h-50 ion-align-items-end ion-justify-content-center">
+                              <ion-label color="light"
+                                         class="ion-text-wrap app-overflow-hidden textbg"
+                                         *ngIf="crud?.visibility?.description === true">
+                                {{crud?.description}}
+                              </ion-label>
+                            </ion-row>
+                          </ion-grid>
+                        </mat-card>
+                        <ion-button size="small" color="light" class="crud-preview-demo"
+                                    *ngIf="crud.isDemo && crudSizeOption != 'large'">{{'DEMO'}}</ion-button>
+                        <div class="app-mh-8 app-mb-8 crud-title">{{crud.title}}</div>
+                      </div>
+                    </ion-item>
+                    <ion-item class='app-ion-item-no-padding'
+                              [ngClass]="crudSizeOption == 'small' ? 'crud-horizontal-card-small' : (crudSizeOption == 'medium' ? 'crud-horizontal-card-medium' : 'crud-horizontal-card-large')"
+                              (click)="needToLogin()">
+                      <mat-card class="app-m-8 app-flex-center crud-horizontal-card-new">
+                        <ion-label class="app-font-14 ion-text-center ion-text-wrap">SHARE SOMETHING</ion-label>
+                      </mat-card>
+                    </ion-item>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+            </ion-list>
+            <ion-row class="ion-no-padding">
+              <ion-list class="app-w-100 ion-no-padding">
+                <ion-item lines="none" class="wanted-row-mobile">
+                  <ion-label style="font-size:.9rem;">Wanted near {{scrapeAddress?.city}}</ion-label>
+                  <ion-button slot="end" color="light" size="small" expand="block"
+                              style="margin: 0 auto">
+                    SUBMIT A WANTED
+                  </ion-button>
+                </ion-item>
+              </ion-list>
+            </ion-row>
+            <ion-row>
+              <ion-grid class="app-w-100 ion-align-items-center">
+                <ion-row
+                  class="app-w-100 ion-align-items-center app-custom-scrollbar goShare-mini-list">
+                  <ion-card class="ion-no-margin goShare-mini-no-card"
+                            *ngIf="filteredRequests.length === 0">
+                    <ion-card-subtitle class="app-m-8">
+                      Be the first to submit a wanted ad in {{scrapeAddress?.city}}
+                    </ion-card-subtitle>
+                  </ion-card>
+                  <ion-card class="ion-no-margin goShare-mini-card"
+                            *ngFor="let request of filteredRequests" (click)="requestDetail()">
+                    <ion-row class="ion-align-items-start">
+                      <ion-label class="app-mr-4"
+                                 *ngFor="let category of request.categories; let i = index">
+                        {{category}}
+                        <span *ngIf="i !== request.categories.length - 1">,</span>
+                      </ion-label>
+                    </ion-row>
+                    <ion-row class="ion-justify-content-center">
+                      <ion-label>{{request.keyword}}</ion-label>
+                    </ion-row>
+                  </ion-card>
+                </ion-row>
+              </ion-grid>
+            </ion-row>
+          </ng-container>
+
+          <ng-container *ngIf="!mapShowing && crudViewMode === 'Vertical'">
+            <mat-grid-list cols="6" rowHeight="1:1" gutterSize="8px" class="app-mv-8"
+                           *ngFor="let oneGroup of crudGroups">
+              <ng-container *ngFor="let crud of oneGroup">
+                <mat-grid-tile class="mat-elevation-z2 crud-card-mobile-vertical"
+                               [ngStyle]="crudBackgroundStyle(crud)"
+                               [colspan]="crud.cols" [rowspan]="crud.rows"
+                               (click)="crudDetail()" *ngIf="crud.title">
+                  <ion-grid class="app-w-100 app-h-100-scroll">
+                    <ion-avatar class="crud-card-mobile-vertical-avatar">
+                      <img [src]="crud.user.avatar ? crud.user.avatar : variableService.noAvatar"
+                           alt=""/>
+                    </ion-avatar>
+                    <ion-row
+                      class="app-w-90 ion-justify-content-center crud-card-mobile-vertical-title">
+                      <ion-label>{{crud.title}}</ion-label>
+                    </ion-row>
+                  </ion-grid>
+                </mat-grid-tile>
+              </ng-container>
+            </mat-grid-list>
+          </ng-container>
+        </ion-grid>
+
+        <ion-grid class="mobile-prog-gs">
+          <ion-item lines="none" color="secondary">
+            <ion-label>Sharing Services</ion-label>
+          </ion-item>
+        </ion-grid>
+        <ion-grid class="ion-no-padding app-p-4 goShare-mobile">
+          <ion-grid class="container" *ngFor="let website of staticSites">
+            <div class="horizontal-static app-custom-scrollbar">
+              <mat-card class="c2action">
+                <mat-card-content>
+                  <div class="scrape-header">
+                    <div class="app-ml-8">
+                      <mat-card-title>{{website.name}}</mat-card-title>
+                      <mat-card-subtitle>{{website.siteURL}}</mat-card-subtitle>
+                    </div>
+                  </div>
+                  <h2 class="app-mb-0 subheading-2">{{website.description}}</h2>
+                  <ion-icon name="library-outline"></ion-icon>
+                  <h3 class="subheading-2">{{website.category}}</h3>
+                </mat-card-content>
+              </mat-card>
+              <div class="crud-horizontal-card-medium" *ngFor="let card of website.cards">
+                <mat-card class="app-mr-8 static-card" (click)="howItWorks(card, website)"
+                          [ngStyle]="{'background-color' : card['background-color'], 'background-image': 'url(' + card['background-image'] + ')', color: card.color}">
+                  <ion-grid class="app-w-100 app-h-100 app-flex-center">
+                    <ion-label class="app-font-20 app-font-bold">{{card.title}}</ion-label>
+                  </ion-grid>
+                </mat-card>
+              </div>
+            </div>
+          </ion-grid>
+        </ion-grid>
+      </ion-grid>
+    </ng-container>
+
+    <ng-container *ngIf="mapShowing">
+      <ion-grid class="app-w-100 app-h-100 ion-no-padding portrait-map-visible">
+        <ion-row class="mat-elevation-z4 portrait-map-box">
+          <agm-map class="app-w-100 app-h-100" [zoom]="11" (zoomChange)="zoomChange($event)"
+                   [latitude]="variableService.scrapeLocation?.lat" [longitude]="variableService.scrapeLocation?.lng">
+            <agm-marker-cluster
+              imagePath="https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m">
+              <agm-marker *ngFor="let scrapeMarker of scrapeMarkers" [latitude]="scrapeMarker.position.lat"
+                          [longitude]="scrapeMarker.position.lng" [iconUrl]="scrapeMarker.icon"></agm-marker>
+            </agm-marker-cluster>
+            <agm-circle [latitude]="variableService.scrapeLocation?.lat"
+                        [longitude]="variableService.scrapeLocation?.lng" [radius]="(variableService.radius * 1600)"
+                        [fillColor]="'red'" [circleDraggable]="false" [editable]="false"
+                        *ngIf="scrapeMarkers.length > 0 && circleShowing">
+            </agm-circle>
+          </agm-map>
+          <ion-label class="portrait-map-markerLabel">{{markerLabel}}</ion-label>
+        </ion-row>
+
+        <ion-grid class="app-w-100 ion-no-padding app-mt-8 mat-elevation-z4 portrait-horizontal-list-container">
+          <ion-row class="app-mv-4 ion-align-items-center">
+            <ion-label class="scroll-size">{{scrollSize}}</ion-label>
+            <img class="scroll-logo" [src]="scrollLogo" alt=""/>
+            <ion-label>{{scrollCategory}}</ion-label>
+          </ion-row>
+          <ion-row class="portrait-horizontal-list app-custom-scrollbar" (scroll)="getScrollCategory()">
+            <div class="category-large-container">
+              <div class="app-inline-block category-small-container">
+                <ion-item class='app-ion-item-no-padding p-h-card'
+                          *ngFor="let crud of filteredCrud" (click)="crudDetail()">
+                  <div>
+                    <ion-card class="ion-no-margin app-mr-4"
+                              [ngClass]="crud.title === focusTitle ? 'focus-card' : ''"
+                              [ngStyle]="crudBackgroundStyle(crud)">
+                      <div mat-card-avatar class="p-h-card-avatar">
+                        <img [src]="crud.user.avatar ? crud.user.avatar : variableService.noAvatar" alt=""/>
+                      </div>
+                      <ion-label class="p-h-card-price">{{displayPrice(crud)}}</ion-label>
+                      <app-rating-bar max="5" readOnly="true" class="p-h-card-rating"
+                                      [(ngModel)]="crud.rating.average"
+                                      [ngModelOptions]="{standalone: true}">
+                      </app-rating-bar>
+                    </ion-card>
+                    <ion-label class="p-h-card-title">{{crud?.title}}</ion-label>
+                  </div>
+                </ion-item>
+              </div>
+            </div>
+            <div class="category-large-container" *ngFor="let category of categories">
+              <div class="app-d-inline-block category-small-container"
+                   *ngFor="let website of ScrapeFilterByCategory(category)">
+                <ion-item class="app-ion-item-no-padding p-h-card" *ngFor="let scrape of website.data">
+                  <div>
+                    <ion-card class="ion-no-margin app-mr-4" [ngStyle]="scrapeBackgroundStyle(scrape)"></ion-card>
+                    <ion-label class="app-mv-4 p-h-card-title">{{scrape?.title}}</ion-label>
+                  </div>
+                </ion-item>
+              </div>
+            </div>
+          </ion-row>
+        </ion-grid>
+      </ion-grid>
+    </ng-container>
+
+    <ion-fab vertical="start" horizontal="start" slot="fixed" style="top: 8px"
+             *ngIf="platform.isPortrait() && mapShowing">
+      <ion-fab-button color="light" (click)="mapShowingClose()">
+        <ion-icon name="close-sharp"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="platform.isPortrait() && !mapShowing">
+      <ion-fab-button color="primary" (click)="mapShowingOpen()">
+        <ion-icon name="location-sharp"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ng-container>
+</ion-content>

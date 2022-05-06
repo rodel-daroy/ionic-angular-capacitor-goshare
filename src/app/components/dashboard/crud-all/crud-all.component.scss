@@ -1,0 +1,11 @@
+.category-list {
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  display: block;
+
+  ion-button {
+    margin-right: 8px;
+    display: inline-block;
+  }
+}

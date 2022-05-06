@@ -1,0 +1,189 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/"></ion-back-button>
+      <ion-label class="ion-hide-sm-down">Back to Dashboard</ion-label>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Profile</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="light" fill="outline" (click)="updateMyProfile()">Update My Profile</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="app-h-100 ion-no-padding profile-container" *ngIf="cacheService.user">
+    <ion-row class="app-h-100">
+
+      <ion-col size-md="6" size-sm="12" size="12" class="ion-padding"
+               [ngClass]="desktopPlatform? 'app-h-100-scroll' : ''">
+        <ion-grid class="ion-margin-bottom ion-no-padding">
+          <ion-row class="mat-elevation-z1 profile-cover-pic" (click)="updateCoverPic()"
+                   [ngStyle]="{'background-image': cacheService.user.coverPic ? 'url('+ cacheService.user.coverPic +')' : 'url(\'../../../../assets/user/default-cover-pic.jpg\')'}">
+            <input hidden type="file" id="profileCoverPicUpload" (change)="profileCoverPicUpload($event)">
+          </ion-row>
+          <ion-img class="mat-elevation-z4 profile-pic" (click)="onAvatarClick()"
+                   [src]="cacheService.user.avatar ? cacheService.user.avatar : variableService.noAvatar"></ion-img>
+          <input hidden type="file" id="profileAvatarUpload" (change)="profileAvatarUpload($event)">
+
+          <ion-row class="app-mv-20 app-pv-4 ion-align-items-center ion-justify-content-center">
+            <h1>{{cacheService.user?.username}}</h1>
+          </ion-row>
+
+          <ion-row class="mat-elevation-z2 profile-membership">
+            <ion-row class="app-flex-column">
+              <ion-label class="app-font-32">{{cacheService.user?.membership}}</ion-label>
+              <ion-label class="ion-margin-top">{{'MEMBERSHIP'}}</ion-label>
+            </ion-row>
+
+            <ion-grid class="ion-no-padding app-flex-center app-flex-column free-trial"
+                      *ngIf="cacheService.user?.role !== 'admin' && cacheService.user?.membership === 'free-trial'">
+              <ion-label class="ion-text-center app-mb-8 app-font-24">{{expiredDays}}</ion-label>
+              <ion-label class="ion-text-center">{{'DAYS LEFT'}}</ion-label>
+            </ion-grid>
+          </ion-row>
+
+          <ion-row class="app-mv-20">
+            <ion-card class="app-w-100 ion-no-margin" *ngIf="cacheService.user?.membership === 'free-trial'">
+              <ion-card-header>
+                <ion-card-subtitle>BECOME A MEMBER</ion-card-subtitle>
+                <ion-card-title>Your 60 days trial is now active. Please subscribe.</ion-card-title>
+              </ion-card-header>
+
+              <ion-card-content>
+                <ion-row class="ion-justify-content-between">
+                  <ion-button (click)="supportingMembership()">
+                    <ion-icon slot="start" name="star"></ion-icon>
+                    $49.69 Yearly Membership
+                  </ion-button>
+
+                  <ion-button (click)="proMembership()" color="secondary">
+                    <ion-icon slot="start" name="person-add"></ion-icon>
+                    $6.99/mo Membership
+                  </ion-button>
+                </ion-row>
+
+                <div id="supporting" class="ion-margin-top" [hidden]="!supportingShow"></div>
+                <div id="pro" class="ion-margin-top" [hidden]="!proShow"></div>
+              </ion-card-content>
+            </ion-card>
+          </ion-row>
+
+          <ion-grid class="ion-no-padding">
+
+            <ion-row class="ion-align-items-start ion-justify-content-between">
+              <h1>Verification</h1>
+              <ion-button routerLink="/verification" routerDirection="forward">
+                Go To Verify
+              </ion-button>
+            </ion-row>
+
+            <mat-card *ngIf="!cacheService.user.verifyStatus || cacheService.user?.verifyStatus === 'unverified'">
+              <mat-card-header>
+                <div mat-card-avatar class="unverified-img"></div>
+                <mat-card-title>Not Verified</mat-card-title>
+                <mat-card-subtitle routerLink="/verification" routerDirection="forward">
+                  This user has not been verified. Click here to try again.
+                </mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+
+            <ng-container *ngIf="cacheService.user?.verifyStatus === 'pending'">
+              <h4>Pending</h4>
+              <h5>
+                Thank you for submitting your verification documents. Your profile will automatically be
+                updated once your verification is processed.
+              </h5>
+
+              <mat-action-list>
+                <button mat-list-item>Close</button>
+              </mat-action-list>
+              <mat-divider class="app-mb-20"></mat-divider>
+            </ng-container>
+
+            <mat-card *ngIf="cacheService.user?.verifyStatus === 'verified'">
+              <mat-card-header>
+                <div mat-card-avatar class="verified-img"></div>
+                <mat-card-title>Verified</mat-card-title>
+                <mat-card-subtitle>Your Identity has been verified. You're good to go!
+                </mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+
+            <mat-card
+              *ngIf="cacheService.user?.verifyStatus === 'deleted' || cacheService.user?.verifyStatus === 'denied'">
+              <mat-card-header>
+                <div mat-card-avatar class="unverified-img"></div>
+                <mat-card-title>Error</mat-card-title>
+                <mat-card-subtitle routerLink="/verification" routerDirection="forward">
+                  We were not able to verify your identity with the documents you submitted. Click
+                  here to try again.
+                </mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+
+            <ion-row class="app-mb-20"
+                     *ngIf="cacheService.user?.role === 'admin' && cacheService.user?.verifyStatus !== 'verified'">
+              <ion-button (click)="makeVerified()">Make Verified</ion-button>
+            </ion-row>
+
+            <mat-divider class="app-mb-20"></mat-divider>
+          </ion-grid>
+
+          <ion-row>
+            <ion-button (click)="openBlockedUsers()">Blocked Users</ion-button>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+
+      <ion-col size-md="6" size-sm="12" size="12" class="ion-padding right-side"
+               [ngClass]="desktopPlatform? 'app-h-100-scroll' : ''">
+        <ion-grid class="ion-margin-bottom ion-no-padding">
+          <ion-item>
+            <ion-label>
+              <ion-label>My URL</ion-label>
+              <ion-label>https://goshare360.web.app/profile/{{underscoreUsername}}</ion-label>
+            </ion-label>
+            <ion-button slot="end" color="medium" expand="block" fill="solid"
+                        [disabled]="!cacheService.user?.public" (click)="share()">
+              Share
+            </ion-button>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <ion-label>My Profile is:</ion-label>
+              <ion-item lines="none" class="app-ion-item-no-padding">
+                <ion-toggle mode="ios" slot="start" [checked]="cacheService.user?.public"
+                            (ionChange)="public_private($event)"></ion-toggle>
+                <ion-label>{{cacheService.user?.public ? 'PUBLIC' : 'PRIVATE'}}</ion-label>
+              </ion-item>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <div>
+              <ion-label position="floating">Profile Title</ion-label>
+              <ion-input [(ngModel)]="profileTitle" (ionChange)="titleEditing()" (ionBlur)="titleEdited()"></ion-input>
+            </div>
+            <ion-button slot="end" color="primary" class="ion-margin-top" (click)="updateTitle()" *ngIf="titleBlur">
+              Update Title
+            </ion-button>
+          </ion-item>
+          <ion-item>
+            <div>
+              <ion-label position="floating">Profile Description</ion-label>
+              <ion-input [(ngModel)]="profileDescription" (ionChange)="descriptionEditing()"
+                         (ionBlur)="descriptionEdited()"></ion-input>
+            </div>
+            <ion-button slot="end" color="primary" class="ion-margin-top" (click)="updateDescription()"
+                        *ngIf="descriptionBlur">
+              Update Description
+            </ion-button>
+          </ion-item>
+        </ion-grid>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,78 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="start" class="app-w48">
+      <ion-button class="ion-hide-sm-up" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Profile Settings & Help</ion-title>
+    <ion-buttons slot="end" class="app-w48">
+      <ion-button class="ion-hide-sm-down" (click)="modalController.dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header lines="none">
+      <ion-label color="primary">ACCOUNT SETTINGS</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label position="stacked">First Name</ion-label>
+      <ion-input placeholder="First" [(ngModel)]="newProfile.firstName"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Last Name</ion-label>
+      <ion-input placeholder="Last" [(ngModel)]="newProfile.lastName"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Username</ion-label>
+      <ion-input placeholder="Username" [(ngModel)]="newProfile.username"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Email</ion-label>
+      <ion-input placeholder="email" [(ngModel)]="newProfile.email"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Phone</ion-label>
+      <ion-input placeholder="(XXX) XXX-XXXX" [(ngModel)]="newProfile.phone"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Zip Code</ion-label>
+      <ion-input placeholder="XXXXX" [(ngModel)]="newProfile.zipCode"></ion-input>
+    </ion-item>
+
+
+    <ion-list-header>
+      <ion-label color="primary">SUPPORT</ion-label>
+    </ion-list-header>
+
+    <ion-item lines="inset" (click)="openTermsConditionsPage()">
+      <ion-label class="ion-text-wrap">Safety Center<br>
+        <span>Get the support, tools, and information you need to be safe.</span>
+      </ion-label>
+      <ion-icon slot="end" name="gift-outline"></ion-icon>
+    </ion-item>
+
+    <ion-item lines="inset" (click)="openContactPage()">
+      <ion-label>Get help</ion-label>
+      <ion-icon name="help-outline"></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar mode="md" color="dark">
+    <ion-buttons slot="end">
+      <ion-button color="primary" expand="block" fill="solid" (click)="save()">SAVE</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
